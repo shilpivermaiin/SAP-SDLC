@@ -1,0 +1,157 @@
+{
+  "customObjectPrefix": "Z",
+  "packageNamingPattern": "Z{MODULE}_{AREA}",
+  "requirementIdPattern": "{MODULE}-{TYPE}-{NNN}",
+  "transportNamingNote": "Transport descriptions must include the requirement ID",
+
+  "abapNamingConventions": {
+    "programs": "Z{MODULE}_{PURPOSE}",
+    "includes": "Z{PROGRAM}_{PURPOSE}_I{NN}",
+    "classes": "ZCL_{AREA}_{PURPOSE}",
+    "interfaces": "ZIF_{AREA}_{PURPOSE}",
+    "localClasses": "LCL_{PURPOSE}",
+    "exceptionClasses": "ZCX_{AREA}_{PURPOSE}",
+    "testClasses": "LTC_{PURPOSE}",
+    "functionGroups": "Z{MODULE}_{AREA}",
+    "functionModules": "Z_{MODULE}_{VERB}_{NOUN}"
+  },
+
+  "localScopeConventions": {
+    "note": "Applies to every declaration that never becomes a standalone repository object, wherever ABAP scoping allows one - method, function module, FORM/subroutine, event block (e.g. AT SELECTION-SCREEN, START-OF-SELECTION), module pool PBO/PAI module, BAdI/enhancement implementation, or a class local to a program/include. Hungarian-style scope prefix + type prefix, per Clean ABAP.",
+    "localVariable": "lv_{purpose}",
+    "localInternalTable": "lt_{purpose}",
+    "localStructureWorkArea": "ls_{purpose}",
+    "localObjectReference": "lo_{purpose}",
+    "localRangeTable": "lr_{purpose}",
+    "localFieldSymbol": "<lfs_{purpose}>",
+    "localConstant": "lc_{purpose}",
+    "localType": "ty_{purpose}",
+    "programGlobalVariable": "gv_{purpose}",
+    "programGlobalInternalTable": "gt_{purpose}",
+    "programGlobalStructureWorkArea": "gs_{purpose}",
+    "programGlobalObjectReference": "go_{purpose}",
+    "classInstanceAttribute": "mv_{purpose} (or mt_/ms_/mo_ for table/structure/object ref)",
+    "classStaticAttribute": "sv_{purpose} (or st_/ss_/so_ for table/structure/object ref)",
+    "methodImportingParam": "iv_{purpose} (or it_/is_/io_ for table/structure/object ref)",
+    "methodExportingParam": "ev_{purpose} (or et_/es_/eo_ for table/structure/object ref)",
+    "methodChangingParam": "cv_{purpose} (or ct_/cs_/co_ for table/structure/object ref)",
+    "methodReturningParam": "rv_{purpose} (or rt_/rs_/ro_ for table/structure/object ref)",
+    "functionModuleParam": "same scope+type prefixes as method params - IMPORTING/EXPORTING/TABLES/CHANGING follow iv_/ev_/et_/cv_ etc.",
+    "formSubroutineParam": "same scope+type prefixes as local variables - USING/CHANGING params follow lv_/lt_/ls_/lo_ etc.",
+    "loopFieldSymbolOrRefVar": "<fs_{purpose}> or ref_{purpose}, scoped only to the loop it's declared in"
+  },
+
+  "dataDictionary": {
+    "tables": "Z{MODULE}_{PURPOSE}",
+    "structures": "ZST_{PURPOSE}",
+    "tableTypes": "ZTT_{PURPOSE}",
+    "dataElements": "ZDE_{PURPOSE}",
+    "domains": "ZDO_{PURPOSE}",
+    "searchHelps": "ZSH_{PURPOSE}",
+    "lockObjects": "EZ{PURPOSE}",
+    "note": "Lock objects are system-enforced EZ prefix, not Z"
+  },
+
+  "cdsViews": {
+    "interfaceView": "Z_I_{ENTITY}",
+    "compositeView": "Z_C_{ENTITY}",
+    "consumptionView": "Z_C_{ENTITY}",
+    "customEntity": "Z_I_{ENTITY}CE",
+    "metadataExtension": "Z_C_{ENTITY}_MDE"
+  },
+
+  "rapArtifacts": {
+    "behaviorDefinition": "Z{ENTITY}",
+    "behaviorImplementationClass": "ZBP_{ENTITY}",
+    "serviceDefinition": "Z_UI_{ENTITY}",
+    "serviceBindingODataV4": "Z{ENTITY}_O4",
+    "draftTable": "Z{ENTITY}D"
+  },
+
+  "odataFiori": {
+    "classicODataService": "Z{MODULE}_{PURPOSE}_SRV",
+    "fioriAppId": "z{module}.{purpose}",
+    "fioriTile": "Z_{MODULE}_{PURPOSE}_TILE"
+  },
+
+  "enhancements": {
+    "badiImplementation": "ZIM_{PURPOSE}",
+    "classicEnhancementImpl": "Z{PURPOSE}_ENH",
+    "customEnhancementSpot": "ZES_{PURPOSE}",
+    "enhancementPoint": "Z{PROGRAM}_{PURPOSE}"
+  },
+
+  "screensTransactions": {
+    "transactionCode": "Z{MODULE}{NNN}",
+    "note": "Screen numbers are 4-digit numeric, not name-based"
+  },
+
+  "messages": {
+    "messageClass": "Z{MODULE}_{PURPOSE}",
+    "note": "Message number is 3-digit sequential within the class"
+  },
+
+  "authorization": {
+    "customAuthObject": "Z{MODULE}_{PURPOSE}",
+    "customAuthField": "Z{PURPOSE}",
+    "note": "Max 10 chars total for auth object name",
+    "roles": {
+      "singleRole": "Z_{MODULE}_{PURPOSE}",
+      "compositeRole": "Z_{MODULE}_{PURPOSE}_COMP",
+      "derivedRole": "Z_{MODULE}_{PURPOSE}_{ORGUNIT}"
+    }
+  },
+
+  "packagesTransport": {
+    "developmentPackage": "Z{MODULE}_{AREA}",
+    "transportDescriptionRule": "Must include {req-id}"
+  },
+
+  "integration": {
+    "customIdocType": "Z{BASIC_TYPE}",
+    "customSegment": "Z1{PURPOSE}",
+    "proxyWrapperClass": "ZCL_{PURPOSE}_PROXY",
+    "webServiceDefinition": "Z{MODULE}_{PURPOSE}_WS",
+    "logicalPort": "Z{MODULE}_{PURPOSE}_LP",
+    "inboundFilePattern": "{SOURCE}_{PURPOSE}_{YYYYMMDDHHMMSS}.{ext}",
+    "outboundFilePattern": "Z{PURPOSE}_{TARGET}_{YYYYMMDDHHMMSS}.{ext}"
+  },
+
+  "btpCap": {
+    "namespace": "com.{company}.{module}.{purpose}",
+    "capEntity": "PascalCase, business-meaningful (e.g. SalesStatusReport)",
+    "serviceModuleFolder": "kebab-case (e.g. sales-status-service)"
+  },
+
+  "numberRanges": {
+    "numberRangeObject": "Z{MODULE}_{PURPOSE}",
+    "note": "Max 10 chars; interval ID is 2-digit, documented against its object"
+  },
+
+  "forms": {
+    "smartForm": "Z{MODULE}_{PURPOSE}",
+    "adobeForm": "Z{MODULE}_{PURPOSE}",
+    "sapscriptForm": "Z{MODULE}_{PURPOSE}",
+    "note": "SAPscript is legacy - avoid for new development"
+  },
+
+  "batchJobsVariants": {
+    "backgroundJobName": "Z{MODULE}_{PURPOSE}_{FREQUENCY}",
+    "programVariant": "Z{PURPOSE}_{ENV_OR_USER}"
+  },
+
+  "workflow": {
+    "workflowTemplate": "Z{MODULE}_WF_{PURPOSE}",
+    "workflowTask": "Z{MODULE}_TS_{PURPOSE}",
+    "brfPlusApplication": "Z{MODULE}_{PURPOSE}"
+  },
+
+  "reporting": {
+    "sapQueryInfoSet": "Z{MODULE}_{PURPOSE}_QRY",
+    "alvLayoutVariant": "Z{PURPOSE}"
+  },
+
+  "governanceRule": "If a build touches an object type not covered above, raise it as a gap and add a new entry here rather than improvising an unlisted convention silently.",
+
+  "referenceDoc": "See naming-conventions.md for full explanations, examples, and the self-check checklist that accompanies this config."
+}

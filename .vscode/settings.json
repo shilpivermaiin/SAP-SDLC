@@ -1,0 +1,6 @@
+{
+  "files.exclude": {
+    "**/.git": true
+  },
+  "markdown.validate.enabled": true
+}

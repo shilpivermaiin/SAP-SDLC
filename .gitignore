@@ -1,0 +1,9 @@
+# Local, per-user audit data written by .claude/shared/Execution_Logging.md — never commit
+.sapsdlc/
+
+# Claude Code local settings (keep .claude/commands, .claude/skills, .claude/shared)
+.claude/settings.local.json
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
