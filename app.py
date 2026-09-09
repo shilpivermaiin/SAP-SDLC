@@ -1,44 +1,25 @@
+import anthropic
 import streamlit as st
 
-st.set_page_config(
-    page_title="SAP SDLC",
-    layout="wide"
+client = anthropic.Anthropic(
+    api_key=st.secrets["ANTHROPIC_API_KEY"]
 )
 
-st.title("SAP SDLC Platform")
+st.title("SAP SDLC")
 
-st.subheader("AI Powered SAP Delivery Framework")
+user_input = st.text_area("Requirement")
 
-col1, col2, col3 = st.columns(3)
+if st.button("Generate"):
 
-with col1:
-    st.button("Scope")
+    message = client.messages.create(
+        model="claude-sonnet-4",
+        max_tokens=4000,
+        messages=[
+            {
+                "role": "user",
+                "content": user_input
+            }
+        ]
+    )
 
-with col2:
-    st.button("Solution Architect")
-
-with col3:
-    st.button("Functional Specification")
-
-col4, col5, col6 = st.columns(3)
-
-with col4:
-    st.button("Technical Specification")
-
-with col5:
-    st.button("Code Generation")
-
-with col6:
-    st.button("Testing")
-
-page = st.sidebar.selectbox(
-    "Select Module",
-    [
-        "Scope",
-        "Solution Architect",
-        "Functional Spec",
-        "Technical Spec",
-        "Code Generation",
-        "Testing"
-    ]
-)
+    st.write(message.content[0].text)
