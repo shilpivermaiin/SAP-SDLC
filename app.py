@@ -30,3 +30,15 @@ with col5:
 
 with col6:
     st.button("Testing")
+
+page = st.sidebar.selectbox(
+    "Select Module",
+    [
+        "Scope",
+        "Solution Architect",
+        "Functional Spec",
+        "Technical Spec",
+        "Code Generation",
+        "Testing"
+    ]
+)
