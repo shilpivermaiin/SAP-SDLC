@@ -249,13 +249,17 @@ Every artifact must reference its upstream parent(s):
 ## Golden Rule: Commands Drive the Process, Not Just Templates
 
 **Never bypass a command by directly filling in a template.** Each command in `.claude/commands/` (and its paired skill in `.claude/skills/`) must:
-1. Read and fully consume the required upstream artifact(s) — never skim or truncate
-2. Apply the No-Fabrication Rule and Phase Boundary Table above
-3. Ask clarifying questions per the Clarifying Question Behavior section
-4. Use its own Output Format section only as the **output structure**, not the process
-5. Produce a freeze-confirmation summary (✅/⚠️/❌) before finalizing
-6. Save the frozen document to `Artifacts/`, confirming the path to the user
-7. End with an explicit handoff line naming the next command in the chain
+1. **Sync with GitHub first** — run `git pull` on the current branch (fast-forward) so `Artifacts/` reflects the latest committed state on GitHub before reading anything, since another session or a direct GitHub edit may have changed it since this working copy was last updated
+2. Read and fully consume the required upstream artifact(s) — never skim or truncate
+3. Apply the No-Fabrication Rule and Phase Boundary Table above
+4. Ask clarifying questions per the Clarifying Question Behavior section
+5. Use its own Output Format section only as the **output structure**, not the process
+6. Produce a freeze-confirmation summary (✅/⚠️/❌) before finalizing
+7. Save the frozen document to `Artifacts/`, confirming the path to the user
+8. **Push back to GitHub** — `git add`/commit the new or updated artifact with a descriptive message and `git push` immediately, so GitHub is never left behind the local copy; confirm the push succeeded before reporting the path as done
+9. End with an explicit handoff line naming the next command in the chain
+
+**GitHub is the source of truth, not the local folder.** This repository's working copy (wherever it's checked out) is only a staging area for the current git branch (`SAP-SDLC`, tracking `origin/SAP-SDLC`) — every phase must pull before reading and push after saving, so `Artifacts/` here and on GitHub never diverge. If a pull would overwrite uncommitted local changes, stop and surface that conflict to the user rather than discarding anything silently. If `git`/network access isn't available in a given session, say so plainly and fall back to working against the local copy as-is, flagging that it may be behind GitHub.
 
 ---
 
