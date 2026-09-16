@@ -13,6 +13,7 @@
 | Version | Date | Changed By | Change Summary | Status at time |
 |---|---|---|---|---|
 | 1.0 | 2026-09-16 | shilpiverma.iin@gmail.com | Initial creation | Draft |
+| 1.0 | 2026-09-16 | shilpiverma.iin@gmail.com | Approved as final (steering committee/product owner gate) | Approved |
 
 ## 2. Requirement Summary
 An interactive Material Summary application is needed to give Plant and Warehouse Operations users a searchable, self-service view of material master attributes (material type, group, description, base unit of measure, status) across all plants and material types, replacing today's scattered, transaction-by-transaction lookup process.
