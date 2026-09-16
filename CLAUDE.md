@@ -152,7 +152,8 @@ CLAUDE.md                        # this file — auto-loaded by Claude Code at s
 │   ├── FunctionalSpec.md
 │   ├── TechnicalSpec.md
 │   ├── Code.md
-│   └── Testing.md
+│   ├── Testing.md
+│   └── Status.md                # utility: read-only cross-phase status dashboard — not part of the gate chain
 ├── skills/                      # one skill per command — the full procedure each command reads before acting
 │   ├── onboarding/SKILL.md      # per-phase role check — invoked by every skill below, not a standalone command
 │   ├── scope/SKILL.md
@@ -160,7 +161,8 @@ CLAUDE.md                        # this file — auto-loaded by Claude Code at s
 │   ├── functional-spec/SKILL.md
 │   ├── technical-spec/SKILL.md
 │   ├── code/SKILL.md
-│   └── testing/SKILL.md
+│   ├── testing/SKILL.md
+│   └── status/SKILL.md          # full procedure for /Status — scans Artifacts/ + execution/, reports per-requirement progress
 └── shared/                      # cross-cutting rules that apply to every phase, higher priority than any single skill
     ├── AI_Behavior_Governance.md
     ├── Clarification_Pattern.md
@@ -275,6 +277,8 @@ Every artifact must reference its upstream parent(s):
 ```
 
 Gate between every phase: the upstream artifact must be **Frozen** and **signed off** before the next prompt begins — each prompt enforces this itself via its own Hard Gate section, including an automatic backward cascade if an upstream artifact is missing.
+
+**`/Status`** is a separate, read-only utility that sits alongside this chain rather than inside it — it reports each requirement's progress across all six phases without advancing or gating any of them. Invoke it explicitly, or just ask a plain-language status/progress question (e.g. "what's the status", "what's been completed so far", "where should I pick this up") — treat that the same as typing `/Status`. Full procedure: [.claude/skills/status/SKILL.md](.claude/skills/status/SKILL.md).
 
 ---
 
