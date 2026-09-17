@@ -42,3 +42,9 @@ Date: 2026-09-17
 11. Role list for the Cost Rate Master? → **Configurable list** (admin-maintained, not a fixed set)
 
 **AI:** All genuine gaps resolved. Design owner left as an assumption (same as Author). Proceeding to Freeze Confirmation.
+
+**AI:** Presented Freeze Confirmation summary (✅/⚠️/❌ checklist). Asked "Ready to freeze this Functional Spec? (yes / edit a section)"
+
+**User:** yes
+
+**AI:** Generated and saved the full Functional Spec to `Artifacts/FunctionalSpec_PS-APP-001.md`.
