@@ -12,3 +12,21 @@ Date: 2026-09-17
 3. Clean Core Assessment (RAP+CDS+OData V4+freestyle UI5, no standard-object modification, no unreleased API) → **Confirmed — fully Clean Core aligned**
 
 No configuration anomalies found (FS Section 10 notes no SPRO/customizing needed). No open items blocking design start.
+
+### Ask the User — Performance & Auth Group
+4. Response-time SLA target? → **No specific SLA**
+5. Dedicated developer auth group (S_DEVELOP)? → **PFCG roles are sufficient**
+
+**AI:** Derived all technical object names from `config/naming-standards.json` (Module = PS), presented the full design in a Freeze Confirmation checklist, and asked to freeze.
+
+**User:** use /NGR/ namespace for the development of custom objects
+
+**AI:** Asked whether this should update the shared `config/naming-standards.json` globally, or apply to PS-APP-001 only.
+
+**User:** This requirement (PS-APP-001) only.
+
+**AI:** Re-derived every technical object name using the `/NGR/` namespace (documented as a requirement-specific deviation in the generated TS Section 2, not a change to the shared config file), re-presented the updated Freeze Confirmation summary.
+
+**User:** yes
+
+**AI:** Generated and saved the full Technical Spec to `Artifacts/TechnicalSpec_PS-APP-001.md`.
