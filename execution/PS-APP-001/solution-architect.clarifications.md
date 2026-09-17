@@ -29,3 +29,10 @@ Date: 2026-09-17
 10. Enterprise architecture direction/standards? → **No specific standard**
 
 **AI:** Presented Solution Approach Options (RAP-based on-stack Clean Core app, classic Gateway on-stack app, BTP side-by-side CAP app) for user selection.
+
+**User:** Select the RAP-based on-stack Clean Core approach along with custom free style Fiori app development (i.e., freestyle SAPUI5 UI instead of Fiori Elements templates).
+
+**AI:** One follow-up needed before finalizing "What Will Be Built" — how should cost be captured (auto-calculated via rate master vs. manual entry)?
+**User:** Both supported (rate-based auto-calculation by default, with manual override allowed per line).
+
+**AI:** Finalized approach: RAP-based on-stack Clean Core app + custom freestyle SAPUI5 UI, with cost auto-calculated via a rate master (override allowed). Proceeded to "What Will Be Built" object list + architecture diagram for confirmation.
