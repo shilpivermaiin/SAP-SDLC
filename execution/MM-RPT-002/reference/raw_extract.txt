@@ -1,0 +1,358 @@
+
+TDD Enhancement 
+<PP -  ITR 2000024053 -3100: Export BoM via Excel from SAP to TC>
+[TABLE START]
+SAP Service Owner (Integration Manager) | May Andreas
+Developer | xxx
+Team | PP
+System | DNP – NENA Production system
+[TABLE END]
+
+Version Control 
+
+[TABLE START]
+Section Reference | Version No. | Description  | Reference Change Request  | Changed By | Date
+Functional Section | 1 | New custom report to export BOM data | 2000024084 | Proteasa Daniel | 16.08.2026
+Technical Section | 1 | New custom report to export BOM data | 2000024084 | xxx | xx.xx.2026
+[TABLE END]
+
+Solution Concept 
+Functional Description 
+Solution Flow
+Flow Chart
+
+Step by Step 
+
+1.2.2.1. Creation of a new custom report to export BOM data in  excel format
+
+A  new report to export multilevel BOM data in excel format (xlsx or xls) is needed.
+
+Requirement description:
+
+The new export report should have following selection screen (Mock-up)
+
+
+
+
+Selection screen field structure:
+
+[TABLE START]
+Field | Description | Domain | Data type
+Z_ MATNR | Materialnummer (DE)Material Number (EN) | MATNR | CHAR (18)
+Z_WERKS | Plant (EN)Werk (DE) | WERKS | CHAR(4)
+Z_DATUV | Valid from (EN)Datum gültig ab (DE) | DATUM | DATS (8)
+[TABLE END]
+
+Also the selection should provide the option to select where the output file is going to be generated. Two options should be possible:
+
+Application server (based on the logical path definition selected)
+The final path should be them concatenated by using the predefined logical path and adding following file name convention:
+
+xxxx_xx_xx.xlsx
+
+
+Example of possible export
+
+
+
+Local file: in this case the user will select the desired export location. Even in this case, the file name should be automatically proposed within the saving window by using the same naming convention as in the first option
+
+Some extra remarks:
+BOM should be always multilevel exploded (materials given in the selection screen will represent the highest level 0 from where the explosion will be propagated downwards to the inferior levels -> if any existing) 
+All determined BOM components to one Level 0 Material will have a dedicated section in the output list. No mixture between the components of several Level 0 materials should happen.
+Once one Level 0 fully exploded/ displayed then continue with the next one. 
+
+As reference for the selection and program logic, the following report can be used: /SIE/EVN_ZPEA_BOM_DOWNLOAD
+
+In correspondence to the determined BOM components as well as the BOM headers, a set of data should be fetched and exported into the XLSX format (details see below)
+
+The output XLSX file will have the following structure:
+
+[TABLE START]
+Field | Description | Data type | Determination rule/ Source
+Z_ TCLEVEL | TC Stuffe (DE)TC Level (EN) | CHAR (5) | It should be by default populated with the following sequence:Level 0 -> 0Level 1 -> 1……………….Level x -> x
+Z_TCOBTYPE | TC Objekt Typ (DE)TC Object Type (EN) | CHAR (13) | Determination logic details – see below!!
+Z_YYBCEZNDR | Erz.-Nr.-Druck (DE)Siemens Product Number(EN) | CHAR (25) | MARA- YYBCEZNDR
+Z_YYBCNORM | Normbyte (DE)Normbyte (EN) | CHAR (2) | MARA- YYBCNORM
+Z_ POSNR | Positionsnr. (DE)Position Number(EN) | CHAR (4) | STPO- POSNRNo leading zeroes needed. If the case, they should be removed!
+Z_ IDNRK | Komponentennummer (DE)Component Number (EN) | CHAR (18) | STPO- IDNRK
+Z_MAKTX | Objektkurztext (DE)Material description | CHAR (40) | MARA- MAKTX
+Z_ SORTF | Sortierbegriff (DE)Sort String (EN) | CHAR (10) | STPO- SORTF
+Z_TEXTH | Text BOM header  (EN)Stückliste Kopftext (DE) | CHAR (100) | Obs. : all text lines should be retrieved, that is including BOM alternative text Several tables are to be considered:STZU – ZTEXT STXH -> Header&Position Long TextsThe texts should be displayed in the same cell below each other as they are found in the source tables.Texts should be exported from DE language
+Z_BEZWISS | Objekt Beziehungswissen (DE)Object dependencies (EN) | CHAR (50) | Step 1:For each component check corresponding STPO- KNOBJ, where corresponding STPO - STVKN has the highest STPO -STPOZAlso exclude positions that have POSTP = “T”Step 2:With KNOBJ found search in table CUOB for corresponding KNNUMStep 3:With each CUOB- KNNUM found at previous step run FM “CUKD_GET_KNOWLEDGE” to retrieve the object dependencies
+Z_TEXTP | StüLi Positionstext (DE)Position BOM text (EN) | CHAR (100) | The complete position Long text should be displayed (if maintained)Relevant source table:STPO- POTX1 (Text Line 1)STPO – POTX2 (Text Line 1)STXH -> Header&Position Long TextsThe texts should be displayed in the same cell below each other as they are found in the source tables.Texts should be exported from DE language
+Z_MENGE | Komponente Menge (DE)Component Qty (EN) | QUAN (13)Dec 3 | STPO - MENGE
+Z_ MEINS | Component Unit of Measure (EN)Komponentenmengeneinheit (DE) | UNIT (3) | STPO- MEINS
+Z_ POSTP | Positionstyp (DE)Item category (EN) | CHAR (1) | STPO- POSTP
+Z_ SANKA | Kalkulationsrelevanzkennzeichen (DE)Indicator for relevancy to costing (EN) | CHAR (1) | STPO- SANKA
+Z_STLST | Stücklistenstatus (DE)BOM Status (EN) | NUMC (2) | STKO- STLST
+Z_MSTAT | Werkspezifische MatStatus (DE)Plant-sp.matl status (EN) |  | Step 1:For the BOM header as well as for each component number identified  (only those for which STOP - POSTP = “L”) with SAP Number search table MARC for corresponding MARC- PSTAT where WERKS =3100Step 2:Display in output the values of MARC- PSTAT found
+[TABLE END]
+
+Determination logic TC Object Type (Z_TCOBTYPE)
+
+With each SAP number of BOM header/ Position perform following check:
+
+[TABLE START]
+Criterion Number | Criterion check logic | Criteria met ? | Mapped value in the output list
+1 | Position type:STPO- POSTP = “T” | yes | TC Object Type = “E4_TextLine”
+1 | Position type:STKO- STLTY = “T” | no | Apply criterion 2
+2 | Material begins with “P*” | no | Apply criterion 3
+2 | Material begins with “P*” | yes | Apply criterion 4
+3 | Material belongs to one of the classes “EL*” or “ME*” | yes | TC Object Type = “E4_EDAComPart”
+3 | Material belongs to one of the classes “EL*” or “ME*” | no | TC Object Type = “E4_ASM_PRT”
+4 | Material has stock | yes | TC Object Type = “E4_EDAComPart”
+4 | Material has stock | no | Apply criterion 5
+5 | Material belongs to one of the classes “EL*” or “ME*” | yes | TC Object Type = “E4_EDAComPart”
+5 | Material belongs to one of the classes “EL*” or “ME*” | no | TC Object Type = “E4_Software”
+[TABLE END]
+
+
+Mock-up  excel export (as reference):
+
+
+Naming convention:
+Report:
+/SIE/EVN_ZPEA_BOM_EXP - Ausleitung der Stückliste als Excel
+                                                 BOM export as Excel
+T-code:
+/SIE/EVN_BOM_EXPORT - Ausleitung der Stückliste als Excel
+                                              BOM export as Excel
+
+
+
+[TABLE START]
+
+
+
+
+
+[TABLE END]
+Job Functions/Job roles (optional)
+Job roles required
+Language
+[TABLE START]
+Language considerations
+ No language considerations
+ Master Data – Related considerations: 
+Translation requirements
+ No translation requirements – Development will be used in English only
+ Translation required.
+Comments
+
+[TABLE END]
+Technical RICEF Description (Logical Units)
+Program 
+[TABLE START]
+Object Type | Object Name | Description
+Report | /SIE/EVN_ZPEA_BOM_EXP | BOM export as Excel
+ |  | 
+[TABLE END]
+
+Technical Description
+
+[TABLE START]
+Step | Description
+1 | Create a new report /SIE/EVN_ZPEA_BOM_EXP with a selection screen.
+2 | The selection screen should provide Material, Plant, and Date as input parameters. It should also provide an option to select whether the generated file should be downloaded to the local system or saved on the Application Server.
+3 | Create a new Logical Path that points to the corresponding physical path on the Application Server.
+4 | Based on the selection criteria entered by the user, call Function Module CS_BOM_EXPL_MAT_V2 to perform the BOM explosion and retrieve the required BOM details.
+5 | Prepare an Excel file based on the data received from the BOM explosion.
+6 | Depending on the file output option selected by the user:For Local System, use GUI_DOWNLOAD to download the file locally.For Application Server, use OPEN DATASET statements to save the file to the configured Application Server path.
+ | 
+ | 
+ | 
+ | 
+ | 
+ | 
+[TABLE END]
+
+Authorization
+Security Considerations
+[TABLE START]
+How should access to run the development be restricted.
+ No specific restrictions
+ Restriction on authorization on development-specific transaction code only 
+ Restrictions based on certain criteria. Please specify criteria
+ Other: Please specify
+Comments:
+
+[TABLE END]
+
+
+
+Class <Name of Class>
+Short description of the functionality of the class.
+Attributes
+[TABLE START]
+Attribute | Description
+ | 
+ | 
+[TABLE END]
+Method <Name of Method>
+Technical Description
+Short description of the functionality of the method.
+Solution Flow 
+Flow Chart
+Optional sub-chapter: If the Functional solution flow displays only an overview of the solution or a detailed flow chart would support the comprehensibility, place here a detailed flow chart
+Step by Step
+Specify all process steps of the report which will be used. If possible, describe also all exceptions, which belong to a specific step. 
+
+[TABLE START]
+Step | Description
+1 | 
+2 | 
+ | 
+ | 
+ | 
+ | 
+[TABLE END]
+Event <Name of Event>
+Technical Description
+Short description of the functionality of the event.
+Solution Flow 
+Flow Chart
+Optional sub-chapter: If the Functional solution flow displays only an overview of the solution or a detailed flow chart would support the comprehensibility, place here a detailed flow chart
+Step by Step
+Specify all process steps of the report which will be used. If possible, describe also all exceptions, which belong to a specific step. 
+
+[TABLE START]
+Step | Description
+1 | 
+2 | 
+ | 
+ | 
+ | 
+ | 
+[TABLE END]
+Module
+Technical Description 
+
+Solution Flow 
+Flow Chart
+Step by Step     
+
+
+[TABLE START]
+Step | Description
+1 | 
+2 | 
+ | 
+ | 
+ | 
+ | 
+[TABLE END]
+Subroutine 
+Technical Description
+Export all output files at least with the header data even if no content exists
+
+Solution Flow 
+Flow Chart
+Optional sub-chapter: If the Functional solution flow displays only an overview of the solution or a detailed flow chart would support the comprehensibility, place here a detailed flow chart
+Step by Step
+Specify all process steps of the report which will be used. If possible, describe also all exceptions, which belong to a specific step. 
+
+[TABLE START]
+Step | Description
+1 | 
+2 | 
+   3 | 
+   4 | 
+ | 
+ | 
+[TABLE END]
+
+
+Appendix A: Data Dictionary Objects
+Tables 
+[TABLE START]
+Table Name | Description of Content / Purpose
+ | 
+ | 
+ | 
+[TABLE END]
+Table Content
+[TABLE START]
+Table Content | Description of Content / Purpose
+ | 
+ | 
+ | 
+[TABLE END]
+Structures 
+[TABLE START]
+Structure | Description of Content / Purpose
+ | 
+ | 
+ | 
+[TABLE END]
+
+Data Elements 
+[TABLE START]
+Data Element | Description of Content / Purpose
+ | 
+ | 
+ | 
+[TABLE END]
+
+Domains 
+[TABLE START]
+Domain | Description of Content / Purpose
+ | 
+ | 
+ | 
+[TABLE END]
+
+Lock Objects 
+[TABLE START]
+Lock Object | Description of Content / Purpose
+ | 
+ | 
+ | 
+[TABLE END]
+Text Objects                   
+[TABLE START]
+Text Type | Text Name / Number | Description of Content / Purpose
+ |  | 
+ |  | 
+ |  | 
+[TABLE END]
+
+Message Classes 
+[TABLE START]
+Message Class | Description of Content / Purpose
+ | 
+ | 
+ | 
+[TABLE END]
+Messages
+[TABLE START]
+Number | Description
+ | 
+ | 
+ | 
+[TABLE END]
+
+
+
+
+Appendix B: Security
+Transaction codes
+[TABLE START]
+Transaction Code | Description
+ | 
+ | 
+[TABLE END]
+ Authorisation objects
+[TABLE START]
+Object |  | Text | 
+Fields | Field Description | Field Values checked in development
+ |  | 
+ |  | 
+[TABLE END]
+
+Appendix C: Testing
+This section is to add some hints for testing otherwise the Test Script or existing Test Reports will be used.
+
+
+Appendix Z: Reference Documentation
+
