@@ -31,3 +31,7 @@ Date: 2026-09-17
 4. Who are the primary users of this app? → **Both** (Presales/bid managers drive RFP estimation; practice/delivery leads contribute and approve module-level estimates; project teams/PMs track actuals once live)
 
 **AI:** Compiled draft BRD (Requirement ID PS-APP-001) incorporating all answers above; flagged Business Owner/Requested By as assumed pending user confirmation. Presented for validation — not yet saved to `Artifacts/`.
+
+**User (change request during validation):** include capability to add cost of the effort per module and per phase of the project
+
+**AI:** Incorporated as an added in-scope capability — cost of effort captured per SAP module and per SAP Activate phase, alongside effort hours, at both RFP-estimate stage and actuals-tracking stage. Flagged the cost-rate mechanism (e.g., role-based rate card vs. resource-level rate) as an assumption to be defined at `/SolutionArchitect`, since that is a solution-design decision, not a BRD-level detail. Revised draft re-presented for validation — still not yet saved to `Artifacts/`.
