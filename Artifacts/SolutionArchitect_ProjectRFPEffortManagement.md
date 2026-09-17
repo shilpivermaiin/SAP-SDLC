@@ -6,12 +6,13 @@
 | Requirement Name | Project & RFP Effort Management (Fiori App) |
 | Linked BRD Ref | BRD_ProjectRFPEffortManagement.md |
 | Author | ankur.gupta04@nagarro.com |
-| Version | 1.0 |
+| Version | 1.1 |
 
 ### Version History
 | Version | Date | Changed By | Change Summary | Status at time |
 |---|---|---|---|---|
 | 1.0 | 2026-09-17 | ankur.gupta04@nagarro.com | Initial creation | Approved |
+| 1.1 | 2026-09-17 | ankur.gupta04@nagarro.com | Removed the module-lead approval status from the RAP Business Object's behavior logic (decided during `/FunctionalSpec`, propagated back per the BRD change) — estimates are now review-only, no blocking approval gate. No `/Code` or `/Testing` artifacts existed yet, so no rebuild/re-test/back-out impact. | Approved |
 
 ## 2. Requirement Reference
 - Linked BRD: [BRD_ProjectRFPEffortManagement.md](BRD_ProjectRFPEffortManagement.md)
@@ -46,7 +47,7 @@
 | Custom Table — Estimate/Actual Line Items | Custom Object | New development | S | Persist RFP effort/cost estimates and actual effort/cost, per module and per SAP Activate phase |
 | Custom Table — Cost Rate Master | Custom Object | New development | S | Reference rates (e.g., per role/module) used to auto-calculate cost from effort |
 | CDS Views (interface + analytical) | Custom Object | New development | M | Data model for the RAP Business Object and aggregated data for the effort/cost-vs-plan dashboard |
-| RAP Business Object (with behavior logic) | Custom Object | New development | M | Core transactional logic: estimate CRUD, module-lead approval status, cost auto-calc/override, actual-vs-estimate computation |
+| RAP Business Object (with behavior logic) | Custom Object | New development | M | Core transactional logic: estimate CRUD, cost auto-calc/override, actual-vs-estimate computation |
 | Service Definition + OData V4 Service Binding | Custom Object | New development (RAP-generated) | S | Exposes the RAP Business Object to the UI as an OData V4 API |
 | Custom Freestyle Fiori (SAPUI5) App | Custom Object | New development (freestyle UI5, not Fiori Elements) | L | End-user application: RFP estimate entry, module-lead approval, actuals tracking, dashboards |
 
@@ -64,7 +65,7 @@ flowchart TD
     CDS --> UI
 ```
 
-All user roles interact through the same freestyle Fiori/UI5 app, which calls a single OData V4 service generated from a RAP Business Object. The RAP behavior logic handles estimate CRUD, approval status, and cost calculation (rate master lookup with manual override), persisting to new custom tables on the S/4HANA system itself. CDS analytical views aggregate that data to power the effort/cost-vs-plan dashboard, consumed back in the same app. Everything stays on-stack — no external system or BTP dependency.
+All user roles interact through the same freestyle Fiori/UI5 app, which calls a single OData V4 service generated from a RAP Business Object. The RAP behavior logic handles estimate CRUD and cost calculation (rate master lookup with manual override), persisting to new custom tables on the S/4HANA system itself. CDS analytical views aggregate that data to power the effort/cost-vs-plan dashboard, consumed back in the same app. Everything stays on-stack — no external system or BTP dependency.
 
 ## 6. Integration, Impact & Non-Functional Considerations
 | Aspect | Details |
