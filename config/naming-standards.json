@@ -107,6 +107,12 @@
     "transportDescriptionRule": "Must include {req-id}"
   },
 
+  "fileHandling": {
+    "note": "Added 2026-09-17 per governanceRule, gap identified during /TechnicalSpec for MM-RPT-002 (no prior entry existed for logical file path/name).",
+    "logicalFilePath": "Z{MODULE}_{PURPOSE}_PATH",
+    "logicalFileName": "Z{MODULE}_{PURPOSE}_FILE"
+  },
+
   "integration": {
     "customIdocType": "Z{BASIC_TYPE}",
     "customSegment": "Z1{PURPOSE}",
