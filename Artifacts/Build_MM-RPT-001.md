@@ -1,6 +1,6 @@
 # Build & Unit Test Record
 
-> ⚠️ **EXECUTION PENDING — NO LIVE SAP CONNECTION.** No SAP system connector (ADT/`SAPWrite`/`SAPActivate`/`SAPDiagnose`/`SAPTransport`) was attached to the session that produced this record. Everything below is the complete, ready-to-execute build per the frozen Technical Spec — full source, message class, text elements, transport, and execution steps. **No object has been created, activated, unit-tested, ATC-checked, or transported yet, and no result in this document is claimed as executed.** Every "Result" cell reads *Pending execution* until the build is run in SAP DEV.
+> **Built in PS4 (S/4HANA on-premise, ABAP 8.16) on 2026-09-25.** Every result below was obtained from the live system via the SAP ADT connection. Two items are manual SAP GUI steps the connection cannot perform (transaction code creation and text-element activation) and are marked ⬜ Pending (Issues B-03, B-04).
 
 ## 1. Document Control
 | Field | Value |
@@ -9,28 +9,33 @@
 | Object Name | Material Summary Application (`ZMM_MAT_SUMMARY`) |
 | Linked Technical Spec Ref | [TechnicalSpec_MM-RPT-001.md](TechnicalSpec_MM-RPT-001.md) |
 | Linked Functional Spec Ref | [FunctionalSpec_MM-RPT-001.md](FunctionalSpec_MM-RPT-001.md) |
-| Developer | SAP-SDLC (AI-assisted) for shilpiverma.iin@gmail.com |
-| Version | 1.0 |
+| Developer | SAP-SDLC (AI-assisted) for shilpiverma.iin@gmail.com — SAP user SHILPI |
+| Version | 1.1 |
 ### Version History
 | Version | Date | Changed By | Change Summary | Status at time |
 |---|---|---|---|---|
 | 1.0 | 2026-09-23 | shilpiverma.iin@gmail.com | Initial creation — build package prepared; SAP execution pending live connection | Draft |
+| 1.1 | 2026-09-25 | shilpiverma.iin@gmail.com | Built, activated, unit-tested and ATC-checked in PS4; export suppression switched to typed SALV setters (B-02); results recorded | In Progress |
 
 ## 2. Development Environment & Transport
 | Item | Value |
 |---|---|
-| DEV Client | ⚠️ To be confirmed at execution (S/4HANA on-premise DEV) |
-| Package | `ZMM_MATSUM` (new) |
-| Workbench Request (single) | ⚠️ To be created at execution — description `MM-RPT-001 Material Summary Application` (check first for an existing open request with "MM-RPT-001" and reuse it) |
+| System | PS4 — S/4HANA on-premise, ABAP release 8.16 (connection via SAP ADT) |
+| DEV Client | Connection client of the PS4 ADT session (development client) |
+| Package | `ZMM_MATSUM` — software component HOME, transport layer ZPS4, responsible SHILPI |
+| Workbench Request (single) | **PS4K902076** "MM-RPT-001 Material Summary Application" (task PS4K902077), target PS4.100 |
 | Customizing Request (single, if applicable) | Not applicable — no configuration (TS §10a) |
+
+> Note: PS4 also holds request PS4K901998 / package ZMM_OPENPO labelled "MM-RPT-001 Open Purchase Orders App" — a different application sharing the same Requirement ID. Per the user's decision (2026-09-25), this build keeps MM-RPT-001 in a separate request; the two are distinguished by description (Issue B-05).
 
 ## 3. Objects Built
 | Seq | Object Type | Object Name | Status | Deviation from TS? |
 |---|---|---|---|---|
-| 1 | Development Package | `ZMM_MATSUM` | ⬜ Pending execution | None |
-| 2 | Message Class | `ZMM_MAT_SUMMARY` (msgs 001–006, §3a) | ⬜ Pending execution | None |
-| 3 | Program (executable) | `ZMM_MAT_SUMMARY` (source §3b, text elements §3c) | ⬜ Pending execution | None |
-| 4 | Transaction (report transaction) | `ZMM001` → program `ZMM_MAT_SUMMARY`, screen 1000, GUI support: SAP GUI for HTML/Windows | ⬜ Pending execution | None |
+| 1 | Development Package | `ZMM_MATSUM` | ✅ Created | None |
+| 2 | Message Class | `ZMM_MAT_SUMMARY` (msgs 001–006, §3a) | ✅ Created & active | None |
+| 3 | Program (executable) | `ZMM_MAT_SUMMARY` (source §3b) | ✅ Created & active | Export suppression via `CL_SALV_FUNCTIONS_LIST` typed setters instead of generic `set_function` — same behavior as TS Rule 8, see B-02 |
+| 4 | Text elements | `ZMM_MAT_SUMMARY` (§3c) | ⚠️ Saved, **inactive** — manual activation (B-04) | None |
+| 5 | Transaction (report transaction) | `ZMM001` → `ZMM_MAT_SUMMARY`, screen 1000 | ⬜ Manual SE93 (B-03) | None |
 
 ### 3a. Message Class `ZMM_MAT_SUMMARY` (short text: "MM-RPT-001 Material Summary")
 | No. | Text |
@@ -42,7 +47,7 @@
 | 005 | You are not authorized to use transaction &1 |
 | 006 | &1 material/plant rows selected |
 
-### 3b. Program `ZMM_MAT_SUMMARY` — full source
+### 3b. Program `ZMM_MAT_SUMMARY` — source as active in PS4
 
 ```abap
 *&---------------------------------------------------------------------*
@@ -272,30 +277,22 @@ CLASS lcl_alv_view IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD hide_export_functions.
-    " Standard ALV function codes for export / download / send /
-    " in-place spreadsheet view. Verified against the system's SALV
-    " release at build time (Build record section 12, issue B-02).
-    CONSTANTS:
-      lc_fc_local_file  TYPE string VALUE '%PC',
-      lc_fc_spreadsheet TYPE string VALUE '&XXL',
-      lc_fc_send_mail   TYPE string VALUE '%SL',
-      lc_fc_word_proc   TYPE string VALUE '&AQW',
-      lc_fc_xml_export  TYPE string VALUE '&XML',
-      lc_fc_view_excel  TYPE string VALUE '&VEXCEL',
-      lc_fc_view_lotus  TYPE string VALUE '&VLOTUS'.
-
-    DATA(lt_fcodes) = VALUE string_table(
-      ( lc_fc_local_file )  ( lc_fc_spreadsheet ) ( lc_fc_send_mail )
-      ( lc_fc_word_proc )   ( lc_fc_xml_export )  ( lc_fc_view_excel )
-      ( lc_fc_view_lotus ) ).
-
-    LOOP AT lt_fcodes INTO DATA(lv_fcode).
-      TRY.
-          io_functions->set_function( name = lv_fcode boolean = abap_false ).
-        CATCH cx_salv_not_found cx_salv_wrong_call.
-          " Function not offered in this release - nothing to hide
-      ENDTRY.
-    ENDLOOP.
+    " Export group (spreadsheet, local file, send/mail, word processing,
+    " XML, HTML, folder) and the in-place spreadsheet/Crystal views.
+    " Typed setters are used because set_function( ) rejects standard
+    " SALV functions with cx_salv_wrong_call.
+    io_functions->set_group_export( abap_false ).
+    io_functions->set_export_spreadsheet( abap_false ).
+    io_functions->set_export_localfile( abap_false ).
+    io_functions->set_export_mail( abap_false ).
+    io_functions->set_export_send( abap_false ).
+    io_functions->set_export_wordprocessor( abap_false ).
+    io_functions->set_export_xml( abap_false ).
+    io_functions->set_export_html( abap_false ).
+    io_functions->set_export_folder( abap_false ).
+    io_functions->set_view_excel( abap_false ).
+    io_functions->set_view_lotus( abap_false ).
+    io_functions->set_view_crystal( abap_false ).
   ENDMETHOD.
 ENDCLASS.
 
@@ -519,107 +516,102 @@ ENDCLASS.
 ### 3c. Text Elements (`ZMM_MAT_SUMMARY`)
 | Type | Key | Text |
 |---|---|---|
-| Title | — | Material Summary |
 | Text symbol | B01 | Selection criteria |
 | Text symbol | B02 | Options |
-| Selection text | S_MATNR, S_WERKS, S_MTART, S_MATKL, S_MSTAE, S_MMSTA | ☑ Dictionary reference |
-| Selection text | P_DEL | Include materials flagged for deletion |
-
-### 3d. Execution Steps (for the session/developer with SAP DEV access)
-1. `SAPTransport list` — reuse an open Workbench request whose description contains "MM-RPT-001"; otherwise `create` one: `MM-RPT-001 Material Summary Application`. Use it for every step below.
-2. Create package `ZMM_MATSUM` (software component/transport layer per DEV standard).
-3. Create message class `ZMM_MAT_SUMMARY` with messages §3a; activate.
-4. Create program `ZMM_MAT_SUMMARY` (type Executable) with source §3b and text elements §3c → `SAPDiagnose syntax` → fix → `SAPActivate`.
-5. Create report transaction `ZMM001` (program `ZMM_MAT_SUMMARY`, screen 1000); activate.
-6. `SAPDiagnose unittest` on `ZMM_MAT_SUMMARY` → record §5; fix and re-run until green.
-7. `SAPDiagnose atc` (default variant) → record §8; fix all priority 1/2 findings.
-8. Verify issue B-02 (export function codes) in SE38 → ZMM001 run: open toolbar *Export* menu and context menu; if any export entry is still visible, add its function code to `hide_export_functions` and re-run.
-9. Run Component Test Plan §9 with the FS test data; record actual results.
-10. Release the task (keep the request open for `/Testing` unless the team standard releases it at build completion) → §10.
+| Selection text | S_MATNR | Material |
+| Selection text | S_WERKS | Plant |
+| Selection text | S_MTART | Material Type |
+| Selection text | S_MATKL | Material Group |
+| Selection text | S_MSTAE | Cross-plant Status |
+| Selection text | S_MMSTA | Plant-specific Status |
+| Selection text | P_DEL | Include deletion-flagged (30-char limit; FS wording "Include materials flagged for deletion" shortened) |
 
 ## 4. Coding Standards & Security Compliance
-Self-review of the source in §3b (static reading, not a system check):
-
 | Check | Status | Notes |
 |---|---|---|
-| Naming conventions & modularization | ✅ Reviewed | Names per `config/naming-standards.json` (program, tcode, message class, package, `lcl_`/`ltc_`, `lv_`/`lt_`/`ls_`/`lo_`/`lr_`/`gv_`/`gs_`/`gt_`/`mo_`/`so_`/`ir_`/`iv_`/`rt_`/`rs_`/`lc_`/`ty_`); three single-purpose local classes |
-| Performance best practices (no nested SELECTs, proper JOINs, no `SELECT *`) | ✅ Reviewed | One joined SELECT with explicit field list and DB-side ORDER BY; validation lookups on buffered customizing tables, one per entered single value |
-| Authorization checks & input validation | ✅ Reviewed | `S_TCODE` check at INITIALIZATION; entered plant/type/group validated (Rule 7); all input via typed ranges |
-| No hardcoded credentials; dynamic SQL handled safely | ✅ Reviewed | No credentials; no dynamic SQL — all static Open SQL with host variables |
-| Inline documentation/comments per team standard | ✅ Reviewed | Header block with Object ID/spec refs; ABAP Doc on public methods; FS rule references at each implementation point |
+| Naming conventions & modularization | ✅ Confirmed | Names per `config/naming-standards.json`; three single-purpose local classes + test class |
+| Performance best practices (no nested SELECTs, proper JOINs, no `SELECT *`) | ✅ Confirmed | One joined SELECT, explicit field list, DB-side ORDER BY. Measured on PS4: full unfiltered selection = 997 rows in ~0.34 s |
+| Authorization checks & input validation | ✅ Confirmed | `S_TCODE` check for ZMM001 at INITIALIZATION; plant/type/group validation (unit-tested) |
+| No hardcoded credentials; dynamic SQL handled safely | ✅ Confirmed | None; static Open SQL only |
+| Inline documentation/comments per team standard | ✅ Confirmed | Header block, ABAP Doc, FS rule references |
 
 ## 5. Unit Test Results
+Run: `SAPDiagnose unittest` on PROG ZMM_MAT_SUMMARY, 2026-09-25 — **8 / 8 passed, 0 failures, 0 errors** (ABAP SQL Test Double framework on MARA/MARC/MAKT/T001W/T134/T023).
+
 | # | Test Case (from TS Section 12) | Method/Class | Result | Evidence |
 |---|---|---|---|---|
-| 1 | Material in 2 plants → 2 rows, both statuses | `ltc_mat_summary->two_plants_one_row_each` | ⬜ Pending execution | — |
-| 2 | Material without MARC not returned | `no_plant_record_not_shown` | ⬜ Pending execution | — |
-| 3 | Client-level deletion excluded | `client_deletion_excluded` | ⬜ Pending execution | — |
-| 4 | Plant-level deletion excluded (that plant only) | `plant_deletion_excluded` | ⬜ Pending execution | — |
-| 5 | Deleted included when checkbox on | `deleted_included_on_flag` | ⬜ Pending execution | — |
-| 6 | Missing logon-language text → blank | `missing_text_left_blank` | ⬜ Pending execution | — |
-| 7 | Plant filter + sort MATNR/WERKS | `plant_filter_and_sort` | ⬜ Pending execution | — |
-| 8 | Invalid plant/type/group → 001/002/003 | `invalid_values_rejected` | ⬜ Pending execution | — |
+| 1 | Material in 2 plants → 2 rows, both statuses | `LTC_MAT_SUMMARY->TWO_PLANTS_ONE_ROW_EACH` | ✅ Passed | ABAP Unit run, 100 ms |
+| 2 | Material without MARC not returned | `NO_PLANT_RECORD_NOT_SHOWN` | ✅ Passed | 170 ms |
+| 3 | Client-level deletion excluded | `CLIENT_DELETION_EXCLUDED` | ✅ Passed | 740 ms |
+| 4 | Plant-level deletion excluded (that plant only) | `PLANT_DELETION_EXCLUDED` | ✅ Passed | 100 ms |
+| 5 | Deleted included when checkbox on | `DELETED_INCLUDED_ON_FLAG` | ✅ Passed | 210 ms |
+| 6 | Missing logon-language text → blank | `MISSING_TEXT_LEFT_BLANK` | ✅ Passed | 100 ms |
+| 7 | Plant filter + sort MATNR/WERKS | `PLANT_FILTER_AND_SORT` | ✅ Passed | 190 ms |
+| 8 | Invalid plant/type/group → 001/002/003 | `INVALID_VALUES_REJECTED` | ✅ Passed | 150 ms |
+
+Coverage: statement 34.9 %, branch 53.6 %. All data-selection and validation logic (FS Rules 1–7) is covered; `lcl_alv_view` (DISPLAY, HIDE_EXPORT_FUNCTIONS) is UI-only and not unit-testable — verified via component test §9 #1/#7.
 
 ## 6. Self-Test Against FS Scenarios
 | FS Scenario Ref (Section 11) | Result |
 |---|---|
-| 1 — Run with no selection | ⬜ Pending execution |
-| 2 — Single plant | ⬜ Pending execution |
-| 3 — Material type + group | ⬜ Pending execution |
-| 4 — Include deletion-flagged | ⬜ Pending execution |
-| 5 — No matching materials | ⬜ Pending execution |
-| 6 — Non-existent plant | ⬜ Pending execution |
-| 7 — No export/download available | ⬜ Pending execution |
+| 1 — Run with no selection | ✅ Data layer verified on PS4 live data: 997 non-deleted material × plant rows, correct columns, sorted MATNR/WERKS (e.g. material 9 "Motorcycle Boots" → plants 1710, HP01). Grid display pending ZMM001 (B-03) |
+| 2 — Single plant | ✅ Verified by unit test 7; on-screen run pending B-03 |
+| 3 — Material type + group | ✅ Range logic verified (same WHERE clause as #2); on-screen run pending B-03 |
+| 4 — Include deletion-flagged | ✅ Verified by unit tests 3–5 (PS4 currently holds 0 deletion-flagged material/plant rows, so live data cannot show a difference) |
+| 5 — No matching materials | ⬜ On-screen check pending B-03 |
+| 6 — Non-existent plant | ✅ Verified by unit test 8 (message 001); on-screen check pending B-03 |
+| 7 — No export/download available | ⬜ On-screen check pending B-03 |
 
 ## 7. Code Review
 | Reviewer | Findings | Resolution | Status |
 |---|---|---|---|
-| SAP-SDLC (AI self-review) | (1) Export function codes are release-dependent → tolerant loop + mandatory on-system check (B-02). (2) S_TCODE check blocks SA38 execution for users without ZMM001 — intended per TS §10. No other findings. | Documented; verification step §3d.8 | ✅ Self-review done |
+| SAP-SDLC (AI self-review, verified against PS4) | (1) `set_function` rejects standard SALV functions on this release (`cx_salv_wrong_call`) — would have left export visible. (2) S_TCODE check blocks SA38 execution for users without ZMM001 — intended per TS §10. | (1) Replaced with `set_group_export`/`set_export_*`/`set_view_*` typed setters (B-02). (2) No change. | ✅ Done |
 | Peer reviewer | — | — | ⬜ Pending |
 
 ## 8. Static Code Analysis
 | Tool | Result | Exceptions Documented |
 |---|---|---|
-| Code Inspector / ATC | ⬜ Pending execution | — |
+| ATC, system default variant (DEFAULT), 2026-09-25 | 3 findings, all priority 3, no priority 1/2 | (a) Text symbols B01/B02 "not defined" — caused by inactive text elements, clears after B-04. (b) "MARC has a replacement object" (SLIN) — accepted: only master-data fields WERKS/MMSTA/LVORM are read, not stock fields; direct table reads are the Clean Core deviation inherited from the Solution Architect write-up (TS §2b) |
 
 ## 9. Component Test Plan (Finalized)
-> From TS Section 12a; no new conditions surfaced during coding. Test data to be provided by the Materials Management team (FS §11).
+> From TS Section 12a. PS4 test data observed: 997 active material × plant rows across plants incl. 1710, HP01, 0900; no deletion-flagged rows (scenario 4 therefore relies on unit tests 3–5 unless MM team flags test materials).
 
 | # | Acceptance Test Criteria | Test Data / Selection Parameters | Expected Result | Actual Result |
 |---|---|---|---|---|
-| 1 | ZMM001, no selection | Blank selection; materials in 2+ plants exist | All non-deleted material × plant rows, 8 columns in FS order, sorted MATNR/WERKS, message 006 with row count | ⬜ Pending |
-| 2 | One plant | `S_WERKS` = test plant | Only that plant's rows | ⬜ Pending |
-| 3 | Type + group | `S_MTART`, `S_MATKL` = test values | Only matching rows | ⬜ Pending |
-| 4 | Deletion checkbox | Client- and plant-level flagged materials; `P_DEL` off, then on | Off: excluded; On: included | ⬜ Pending |
-| 5 | No match | `S_MATNR` = non-existent material | Message 004 (info), stays on selection screen | ⬜ Pending |
-| 6 | Invalid plant | `S_WERKS` = `ZZZZ` | Message 001 (error), stays on selection screen | ⬜ Pending |
-| 7 | Export functions | Any result list | No spreadsheet / local file / send / XML / word-processing / Excel in-place function in toolbar or context menu | ⬜ Pending |
-| 8 | No transaction authorization | Test user without ZMM001, run via SA38 | Message 005 | ⬜ Pending |
+| 1 | ZMM001, no selection | Blank selection | 997 rows, 8 columns in FS order, sorted MATNR/WERKS, message 006 | Data: ✅ 997 rows, correct order (SQL on PS4). Screen: ⬜ after B-03 |
+| 2 | One plant | `S_WERKS` = 1710 | Only plant 1710 rows | ⬜ after B-03 |
+| 3 | Type + group | `S_MTART` = FERT, `S_MATKL` = FT | Only matching rows | ⬜ after B-03 |
+| 4 | Deletion checkbox | Flag a test material (client and plant level) | Off: excluded; On: included | ✅ Unit tests 3–5; live ⬜ (no flagged data) |
+| 5 | No match | `S_MATNR` = non-existent material | Message 004, stays on selection screen | ⬜ after B-03 |
+| 6 | Invalid plant | `S_WERKS` = ZZZZ | Message 001, stays on selection screen | ✅ Unit test 8; screen ⬜ after B-03 |
+| 7 | Export functions | Any result list | No export / send / Excel in-place function | ⬜ after B-03 |
+| 8 | No transaction authorization | User without ZMM001 via SA38 | Message 005 | ⬜ after B-03 + role |
 
 ## 10. Transport Finalization
 | Transport Request | Type (Workbench/Customizing) | Contents | Released Date | Ready for QA? |
 |---|---|---|---|---|
-| ⚠️ To be created (`MM-RPT-001 Material Summary Application`) | Workbench | DEVC ZMM_MATSUM, PROG ZMM_MAT_SUMMARY (+ text elements), MSAG ZMM_MAT_SUMMARY, TRAN ZMM001 | — | ❌ No — not built yet |
+| PS4K902076 (task PS4K902077) | Workbench | R3TR DEVC ZMM_MATSUM, R3TR MSAG ZMM_MAT_SUMMARY, R3TR PROG ZMM_MAT_SUMMARY (+ text elements); R3TR TRAN ZMM001 to be added by SE93 (B-03) | Not released | ⚠️ Not yet — after B-03/B-04 and screen checks |
 
 ## 11. Assumptions & Dependencies
-- ⚠️ Target release S/4HANA on-premise (ABAP 7.50+) — required for the Open SQL syntax used (`@` host variables, comma-separated field list, host variable in outer-join ON condition) and `cl_osql_test_environment`.
-- ⚠️ DEV client, software component and transport layer to be confirmed at execution.
-- Dependency: SAP DEV access for the executing session/developer (see Issues Log B-01).
 - Dependency: Security team adds ZMM001 to the Plant/Warehouse Operations role (SA §7).
-- Dependency: Materials Management team supplies component test data (FS §11).
+- Dependency: Materials Management team flags a test material for deletion if a live check of scenario 4 is wanted (FS §11).
 
 ## 12. Issues Log
 | Issue ID | Description | Resolution | Schedule Impact | Budget Impact | Status |
 |---|---|---|---|---|---|
-| B-01 | No SAP system connector attached to the build session — objects cannot be created, activated, unit-tested, ATC-checked, or transported from it | Build package completed in this record; execute §3d in a session with the SAP ADT MCP connected (or manually in SE80/ADT) | Build execution deferred until connection is available | None | Open (manual dependency) |
-| B-02 | ALV export function codes / `set_function` behaviour are release-dependent | Tolerant implementation (unknown codes ignored) + mandatory on-system verification, step §3d.8 | None | None | Open (verify at execution) |
+| B-01 | No SAP connector in the 2026-09-23 session | PS4 connector attached 2026-09-25; build executed | None | None | Closed |
+| B-02 | `CL_SALV_FUNCTIONS->set_function` raises `cx_salv_wrong_call` for standard SALV functions (verified by reading the method on PS4) — export would not have been hidden | Rewrote `hide_export_functions` with typed setters `set_group_export`, `set_export_*`, `set_view_excel/lotus/crystal` | None | None | Fixed |
+| B-03 | ADT connection cannot create transaction codes | Manual: SE93 create ZMM001 (report transaction → ZMM_MAT_SUMMARY, screen 1000, SAP GUI for Windows/HTML) in PS4K902076 | Minor | None | Open (manual) |
+| B-04 | Text elements saved but connection cannot activate the text-element sub-object (PROG/PX) | Manual: SE38 ZMM_MAT_SUMMARY → Goto → Text Elements → Activate (or SE80 inactive objects) | Minor | None | Open (manual) |
+| B-05 | Requirement ID MM-RPT-001 also used on PS4 by the Open Purchase Orders App (ZMM_OPENPO / PS4K901998) | User decision 2026-09-25: keep MM-RPT-001, separate request PS4K902076 | None | None | Accepted |
+| B-06 | Connector's local pre-write lint is configured for ABAP 7.02 and rejects 7.40+ syntax | Lint skipped; SAP server syntax check used instead (clean except MARC warning) | None | None | Closed |
 
 ## 13. Sign-off
 | Role | Name | Status |
 |---|---|---|
-| Developer | SAP-SDLC (AI-assisted) | ⬜ Pending — build package prepared, execution pending |
+| Developer | SAP-SDLC (AI-assisted) / SHILPI | ✅ Approved — build, unit tests, ATC done |
 | Peer Reviewer | | ⬜ Pending |
 | Technical Lead | | ⬜ Pending |
 
 ---
-**Next step:** Execute §3d in SAP DEV, record results in §§5–10, then `/Testing` for Object ID: MM-RPT-001, using this Build & Unit Test Record and the linked TS/FS as reference.
+**Next step:** After B-03 and B-04 are done, re-run ATC and the on-screen component checks, then `/Testing` for Object ID: MM-RPT-001, using this Build & Unit Test Record and the linked TS/FS as reference.
