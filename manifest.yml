@@ -1,0 +1,22 @@
+# Cloud Foundry deployment manifest for SAP BTP.
+# Deploy with: cf push
+#
+# Before pushing, either:
+#  (a) fill in the env: block below directly (simplest, but credentials live in this
+#      file — do NOT commit real values to git), or
+#  (b) better: create a user-provided service with `cf cups sap-creds -p ...` and bind
+#      it instead (see DEPLOY.md, step 4).
+
+applications:
+  - name: sap-btp-mcp
+    memory: 256M
+    disk_quota: 512M
+    instances: 1
+    buildpacks:
+      - nodejs_buildpack
+    env:
+      SAP_URL: https://sapdev.nagarro.com:44300
+      SAP_CLIENT: "110"
+      # SAP_USERNAME / SAP_PASSWORD: do NOT set here — bind the sap-creds
+      # user-provided service instead (DEPLOY.md step 4), so credentials
+      # never sit in this file or in plain `cf env`.
