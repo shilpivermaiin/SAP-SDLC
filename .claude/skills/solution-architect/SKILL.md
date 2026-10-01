@@ -11,6 +11,8 @@ description: 'Full procedure for the /SolutionArchitect command (Phase 2: Soluti
 
 > **Logging (mandatory):** After the artifact is saved and agreed, apply [.claude/shared/Execution_Logging.md](../../shared/Execution_Logging.md).
 
+> **Git Publishing (mandatory):** After the artifact is saved and agreed, apply [.claude/shared/Git_Workflow.md](../../shared/Git_Workflow.md) to sync this requirement's GitHub branch.
+
 > **Versioning (mandatory):** Before starting work on an existing requirement, check [.claude/shared/Versioning_Policy.md](../../shared/Versioning_Policy.md) — if every document for this requirement is already Frozen/Approved/Complete from `/Scope` through `/Testing`, ask whether this should be raised as Version 2 before editing anything.
 
 ## When to Use
