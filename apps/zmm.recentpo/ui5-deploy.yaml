@@ -1,0 +1,23 @@
+# Deploy target is read from the environment so no credentials are stored in the repository.
+# Set SAP_URL (e.g. https://host:port), SAP_CLIENT=110, SAP_USER and SAP_PASSWORD in a local .env file (not committed).
+specVersion: "3.1"
+metadata:
+  name: zmm.recentpo
+type: application
+builder:
+  resources:
+    excludes:
+      - "/test/**"
+      - "/localService/**"
+  customTasks:
+    - name: deploy-to-abap
+      afterTask: generateCachebusterInfo
+      configuration:
+        target:
+          url: ${env.SAP_URL}
+          client: "110"
+        app:
+          name: ZMM_RECENTPO
+          description: MM-RPT-001 Recent POs
+          package: ZMM_RECENTPO
+          transport: PS4K902109

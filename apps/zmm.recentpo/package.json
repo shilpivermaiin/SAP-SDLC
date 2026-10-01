@@ -1,0 +1,14 @@
+{
+  "name": "zmm.recentpo",
+  "version": "1.0.0",
+  "description": "MM-RPT-001 Recently Created Purchase Orders View (Fiori elements list report)",
+  "private": true,
+  "scripts": {
+    "build": "ui5 build --clean-dest --config ui5.yaml",
+    "deploy": "fiori deploy --config ui5-deploy.yaml --yes"
+  },
+  "devDependencies": {
+    "@sap/ux-ui5-tooling": "^1",
+    "@ui5/cli": "^3"
+  }
+}
