@@ -1,0 +1,49 @@
+<mvc:View
+	controllerName="zps.rfpeffortmgmt.controller.List"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.m">
+	<Page title="{i18n>listTitle}">
+		<headerContent>
+			<Button text="{i18n>dashboard}" icon="sap-icon://bar-chart" press=".onDashboard" />
+			<Button text="{i18n>rateMaster}" icon="sap-icon://money-bills" press=".onRates" />
+		</headerContent>
+		<content>
+			<Table
+				id="rfpTable"
+				growing="true"
+				growingThreshold="50"
+				mode="None"
+				items="{
+					path: '/RfpEffort',
+					sorter: [{ path: 'Status', descending: false }, { path: 'RfpName', descending: false }]
+				}">
+				<headerToolbar>
+					<OverflowToolbar>
+						<Title text="{i18n>rfpList}" />
+						<ToolbarSpacer />
+						<SearchField width="16rem" placeholder="{i18n>search}" search=".onSearch" />
+						<Button type="Emphasized" text="{i18n>create}" icon="sap-icon://add" press=".onCreate" />
+					</OverflowToolbar>
+				</headerToolbar>
+				<columns>
+					<Column><Text text="{i18n>colName}" /></Column>
+					<Column><Text text="{i18n>colCustomer}" /></Column>
+					<Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>colOwner}" /></Column>
+					<Column width="8rem"><Text text="{i18n>colStatus}" /></Column>
+				</columns>
+				<items>
+					<ColumnListItem type="Navigation" press=".onSelect">
+						<cells>
+							<ObjectIdentifier title="{RfpName}" />
+							<Text text="{CustomerName}" />
+							<Text text="{OwnerUser}" />
+							<ObjectStatus
+								text="{path: 'Status', formatter: '.formatter.statusText'}"
+								state="{path: 'Status', formatter: '.formatter.statusState'}" />
+						</cells>
+					</ColumnListItem>
+				</items>
+			</Table>
+		</content>
+	</Page>
+</mvc:View>

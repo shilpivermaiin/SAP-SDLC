@@ -113,6 +113,12 @@
     "logicalFileName": "Z{MODULE}_{PURPOSE}_FILE"
   },
 
+  "uiDeployment": {
+    "note": "Added 2026-10-01 per governanceRule, gap identified during /Code for PS-APP-001 (no prior entry existed for the BSP application that a freestyle SAPUI5 app is deployed into).",
+    "bspApplication": "Z{MODULE}_{PURPOSE}",
+    "ui5AppId": "see odataFiori.fioriAppId"
+  },
+
   "integration": {
     "customIdocType": "Z{BASIC_TYPE}",
     "customSegment": "Z1{PURPOSE}",

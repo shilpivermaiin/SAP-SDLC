@@ -1,0 +1,37 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:l="sap.ui.layout.form">
+	<Dialog title="{line>/title}" contentWidth="32rem">
+		<content>
+			<l:SimpleForm editable="true" layout="ResponsiveGridLayout">
+				<Label text="{i18n>colModule}" required="true" />
+				<Select selectedKey="{line>/SapModule}" forceSelection="false" items="{ref>/modules}">
+					<core:Item key="{ref>key}" text="{ref>text}" />
+				</Select>
+				<Label text="{i18n>colPhase}" required="true" />
+				<Select selectedKey="{line>/ActivatePhase}" forceSelection="false" items="{ref>/phases}">
+					<core:Item key="{ref>key}" text="{ref>text}" />
+				</Select>
+				<Label text="{i18n>colRole}" required="true" />
+				<ComboBox value="{line>/Role}" items="{path: '/RoleValueHelp'}">
+					<core:Item key="{Role}" text="{Role}" />
+				</ComboBox>
+				<Label text="{i18n>colEffort}" required="true" />
+				<Input value="{line>/EffortHours}" type="Number" />
+				<Label text="{i18n>colCost}" />
+				<Input value="{line>/Cost}" type="Number" />
+				<Label text="{i18n>colCurrency}" />
+				<Input value="{line>/Currency}" maxLength="5" />
+				<Label text="{i18n>colActivity}" required="true" visible="{line>/isActual}" />
+				<Input value="{line>/ActivityDesc}" maxLength="255" visible="{line>/isActual}" />
+			</l:SimpleForm>
+		</content>
+		<beginButton>
+			<Button type="Emphasized" text="{i18n>ok}" press=".onAddLineConfirm" />
+		</beginButton>
+		<endButton>
+			<Button text="{i18n>cancel}" press=".onAddLineCancel" />
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

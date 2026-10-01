@@ -1,0 +1,27 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:l="sap.ui.layout.form">
+	<Dialog title="{i18n>rateAdd}" contentWidth="30rem">
+		<content>
+			<l:SimpleForm editable="true" layout="ResponsiveGridLayout">
+				<Label text="{i18n>colModule}" required="true" />
+				<Select selectedKey="{newrate>/SapModule}" forceSelection="false" items="{ref>/modules}">
+					<core:Item key="{ref>key}" text="{ref>text}" />
+				</Select>
+				<Label text="{i18n>colRole}" required="true" />
+				<Input value="{newrate>/Role}" maxLength="30" />
+				<Label text="{i18n>colRate}" required="true" />
+				<Input value="{newrate>/Rate}" type="Number" />
+				<Label text="{i18n>colCurrency}" required="true" />
+				<Input value="{newrate>/Currency}" maxLength="5" />
+			</l:SimpleForm>
+		</content>
+		<beginButton>
+			<Button type="Emphasized" text="{i18n>ok}" press=".onAddConfirm" />
+		</beginButton>
+		<endButton>
+			<Button text="{i18n>cancel}" press=".onAddCancel" />
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

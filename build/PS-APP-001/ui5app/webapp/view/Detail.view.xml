@@ -1,0 +1,132 @@
+<mvc:View
+	controllerName="zps.rfpeffortmgmt.controller.Detail"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<Page id="detailPage" title="{RfpName}" showNavButton="true" navButtonPress=".onNavBack">
+		<headerContent>
+			<Button
+				text="{i18n>markAsWon}"
+				type="Emphasized"
+				icon="sap-icon://accept"
+				visible="{= ${Status} === 'EST'}"
+				press=".onMarkAsWon" />
+			<Button text="{i18n>dashboard}" icon="sap-icon://bar-chart" press=".onDashboard" />
+		</headerContent>
+		<content>
+			<ObjectHeader title="{RfpName}" backgroundDesign="Translucent">
+				<attributes>
+					<ObjectAttribute title="{i18n>colCustomer}" text="{CustomerName}" />
+					<ObjectAttribute title="{i18n>colOwner}" text="{OwnerUser}" />
+				</attributes>
+				<statuses>
+					<ObjectStatus
+						text="{path: 'Status', formatter: '.formatter.statusText'}"
+						state="{path: 'Status', formatter: '.formatter.statusState'}" />
+				</statuses>
+			</ObjectHeader>
+
+			<IconTabBar id="tabs" expandable="false" stretchContentHeight="false">
+				<items>
+					<IconTabFilter key="estimate" text="{i18n>tabEstimate}" icon="sap-icon://notes">
+						<Table
+							id="estimateTable"
+							items="{
+								path: '_Item',
+								parameters: { $$ownRequest: true },
+								filters: [{ path: 'EntryType', operator: 'EQ', value1: 'EST' }],
+								sorter: [{ path: 'SapModule' }, { path: 'ActivatePhase' }]
+							}">
+							<headerToolbar>
+								<OverflowToolbar>
+									<ToolbarSpacer />
+									<Button text="{i18n>addLine}" icon="sap-icon://add" press=".onAddEstimate" />
+								</OverflowToolbar>
+							</headerToolbar>
+							<columns>
+								<Column><Text text="{i18n>colModule}" /></Column>
+								<Column><Text text="{i18n>colPhase}" /></Column>
+								<Column><Text text="{i18n>colRole}" /></Column>
+								<Column hAlign="End"><Text text="{i18n>colEffort}" /></Column>
+								<Column hAlign="End"><Text text="{i18n>colCost}" /></Column>
+								<Column width="6rem"><Text text="{i18n>colCurrency}" /></Column>
+								<Column width="3rem" />
+							</columns>
+							<items>
+								<ColumnListItem>
+									<cells>
+										<Select selectedKey="{SapModule}" items="{ref>/modules}">
+											<core:Item key="{ref>key}" text="{ref>text}" />
+										</Select>
+										<Select selectedKey="{ActivatePhase}" items="{ref>/phases}">
+											<core:Item key="{ref>key}" text="{ref>text}" />
+										</Select>
+										<ComboBox value="{Role}" items="{path: '/RoleValueHelp'}">
+											<core:Item key="{Role}" text="{Role}" />
+										</ComboBox>
+										<Input value="{EffortHours}" textAlign="End" />
+										<Input value="{Cost}" textAlign="End" />
+										<Input value="{Currency}" maxLength="5" />
+										<Button icon="sap-icon://delete" type="Transparent" tooltip="{i18n>deleteLine}" press=".onDeleteLine" />
+									</cells>
+								</ColumnListItem>
+							</items>
+						</Table>
+					</IconTabFilter>
+
+					<IconTabFilter
+						key="actuals"
+						text="{i18n>tabActuals}"
+						icon="sap-icon://time-entry-request"
+						visible="{= ${Status} === 'WON'}">
+						<Table
+							id="actualTable"
+							items="{
+								path: '_Item',
+								parameters: { $$ownRequest: true },
+								filters: [{ path: 'EntryType', operator: 'EQ', value1: 'ACT' }],
+								sorter: [{ path: 'SapModule' }, { path: 'ActivatePhase' }]
+							}">
+							<headerToolbar>
+								<OverflowToolbar>
+									<ToolbarSpacer />
+									<Button text="{i18n>addLine}" icon="sap-icon://add" press=".onAddActual" />
+								</OverflowToolbar>
+							</headerToolbar>
+							<columns>
+								<Column><Text text="{i18n>colModule}" /></Column>
+								<Column><Text text="{i18n>colPhase}" /></Column>
+								<Column><Text text="{i18n>colRole}" /></Column>
+								<Column hAlign="End"><Text text="{i18n>colEffort}" /></Column>
+								<Column hAlign="End"><Text text="{i18n>colCost}" /></Column>
+								<Column width="6rem"><Text text="{i18n>colCurrency}" /></Column>
+								<Column><Text text="{i18n>colActivity}" /></Column>
+								<Column width="3rem" />
+							</columns>
+							<items>
+								<ColumnListItem>
+									<cells>
+										<Select selectedKey="{SapModule}" items="{ref>/modules}">
+											<core:Item key="{ref>key}" text="{ref>text}" />
+										</Select>
+										<Select selectedKey="{ActivatePhase}" items="{ref>/phases}">
+											<core:Item key="{ref>key}" text="{ref>text}" />
+										</Select>
+										<ComboBox value="{Role}" items="{path: '/RoleValueHelp'}">
+											<core:Item key="{Role}" text="{Role}" />
+										</ComboBox>
+										<Input value="{EffortHours}" textAlign="End" />
+										<Input value="{Cost}" textAlign="End" />
+										<Input value="{Currency}" maxLength="5" />
+										<Input value="{ActivityDesc}" maxLength="255" />
+										<Button icon="sap-icon://delete" type="Transparent" tooltip="{i18n>deleteLine}" press=".onDeleteLine" />
+									</cells>
+								</ColumnListItem>
+							</items>
+						</Table>
+					</IconTabFilter>
+				</items>
+			</IconTabBar>
+		</content>
+	</Page>
+</mvc:View>

@@ -1,0 +1,24 @@
+# Deploy target for the SAPUI5 app. Fill in the URL; credentials come from a local .env file
+# (SAP_USER / SAP_PASSWORD) and must never be committed.
+specVersion: "3.0"
+metadata:
+  name: zps.rfpeffortmgmt
+type: application
+builder:
+  resources:
+    excludes:
+      - "/test/**"
+  customTasks:
+    - name: deploy-to-abap
+      afterTask: generateCachebusterInfo
+      configuration:
+        target:
+          url: REPLACE_WITH_SAP_SYSTEM_URL
+          client: "110"
+        app:
+          name: ZPS_RFPEFFORT
+          description: PS-APP-001 Project and RFP Effort Management
+          package: ZPS_EFFORT
+          transport: PS4K902111
+        exclude:
+          - /test/

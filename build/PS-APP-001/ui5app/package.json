@@ -1,0 +1,14 @@
+{
+  "name": "zps-rfpeffortmgmt",
+  "version": "1.0.0",
+  "description": "PS-APP-001 Project & RFP Effort Management (freestyle SAPUI5)",
+  "private": true,
+  "scripts": {
+    "build": "ui5 build --clean-dest",
+    "build:deploy": "ui5 build preload --clean-dest --config ui5-deploy.yaml",
+    "deploy": "npm run build:deploy && npx --package @sap/ux-ui5-tooling fiori deploy --config ui5-deploy.yaml --yes"
+  },
+  "devDependencies": {
+    "@ui5/cli": "^4.0.0"
+  }
+}

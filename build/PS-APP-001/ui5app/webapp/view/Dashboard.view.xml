@@ -1,0 +1,94 @@
+<mvc:View
+	controllerName="zps.rfpeffortmgmt.controller.Dashboard"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<Page title="{i18n>dashboardTitle}" showNavButton="true" navButtonPress=".onNavBack">
+		<subHeader>
+			<OverflowToolbar>
+				<SegmentedButton selectedKey="{dash>/view}">
+					<items>
+						<SegmentedButtonItem key="matrix" text="{i18n>viewModulePhase}" />
+						<SegmentedButtonItem key="summary" text="{i18n>viewRfpSummary}" />
+					</items>
+				</SegmentedButton>
+				<Label text="{i18n>filterRfp}" />
+				<Select
+					selectedKey="{dash>/selectedRfp}"
+					items="{dash>/rfps}"
+					change=".onFilterChange"
+					width="18rem">
+					<core:Item key="{dash>key}" text="{dash>text}" />
+				</Select>
+				<ToolbarSpacer />
+				<Button text="{i18n>export}" icon="sap-icon://excel-attachment" press=".onExport" />
+			</OverflowToolbar>
+		</subHeader>
+		<content>
+			<Table
+				id="matrixTable"
+				visible="{= ${dash>/view} === 'matrix'}"
+				items="{dash>/matrix}"
+				noDataText="{i18n>noData}">
+				<columns>
+					<Column width="6rem"><Text text="{i18n>colModule}" /></Column>
+					<Column><Text text="PREPARE" /></Column>
+					<Column><Text text="EXPLORE" /></Column>
+					<Column><Text text="REALIZE" /></Column>
+					<Column><Text text="DEPLOY" /></Column>
+					<Column><Text text="RUN" /></Column>
+				</columns>
+				<items>
+					<ColumnListItem>
+						<cells>
+							<ObjectIdentifier title="{dash>module}" />
+							<VBox>
+								<Text text="{dash>cells/PREPARE/est}" />
+								<Text text="{dash>cells/PREPARE/act}" />
+							</VBox>
+							<VBox>
+								<Text text="{dash>cells/EXPLORE/est}" />
+								<Text text="{dash>cells/EXPLORE/act}" />
+							</VBox>
+							<VBox>
+								<Text text="{dash>cells/REALIZE/est}" />
+								<Text text="{dash>cells/REALIZE/act}" />
+							</VBox>
+							<VBox>
+								<Text text="{dash>cells/DEPLOY/est}" />
+								<Text text="{dash>cells/DEPLOY/act}" />
+							</VBox>
+							<VBox>
+								<Text text="{dash>cells/RUN/est}" />
+								<Text text="{dash>cells/RUN/act}" />
+							</VBox>
+						</cells>
+					</ColumnListItem>
+				</items>
+			</Table>
+
+			<Table
+				id="summaryTable"
+				visible="{= ${dash>/view} === 'summary'}"
+				items="{dash>/summary}"
+				noDataText="{i18n>noData}">
+				<columns>
+					<Column><Text text="{i18n>colName}" /></Column>
+					<Column><Text text="{i18n>totalEstimate}" /></Column>
+					<Column><Text text="{i18n>totalActual}" /></Column>
+					<Column><Text text="{i18n>variance}" /></Column>
+				</columns>
+				<items>
+					<ColumnListItem>
+						<cells>
+							<ObjectIdentifier title="{dash>name}" text="{dash>customer}" />
+							<Text text="{dash>est}" />
+							<Text text="{dash>act}" />
+							<Text text="{dash>var}" />
+						</cells>
+					</ColumnListItem>
+				</items>
+			</Table>
+		</content>
+	</Page>
+</mvc:View>
