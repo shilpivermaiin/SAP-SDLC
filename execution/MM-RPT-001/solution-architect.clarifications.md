@@ -14,3 +14,7 @@ Date: 2026-10-01
 - Direction: SAP standard first, keep core clean
 - Reuse/impact: Nothing to reuse
 **AI:** Remaining questionnaire items (external systems, integration, system of record, non-functional, compliance) carried as labelled assumptions: BRD describes a single SAP system, no integration.
+
+**AI:** Presented options A-D. **User:** B. Custom Fiori list app.
+**AI:** Presented What Will Be Built + diagram + prerequisites. **User:** Confirm / Confirm.
+**AI:** Presented draft write-up. **User:** ok. Saved Artifacts/SolutionArchitect_RecentPurchaseOrders.md.
