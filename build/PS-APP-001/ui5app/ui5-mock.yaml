@@ -1,0 +1,26 @@
+# Local preview against a mock OData V4 backend (no SAP system needed): npm run start:mock
+specVersion: "3.0"
+metadata:
+  name: zps.rfpeffortmgmt
+type: application
+framework:
+  name: OpenUI5
+  version: "1.120.50"
+  libraries:
+    - name: sap.ui.core
+    - name: sap.m
+    - name: sap.ui.layout
+    - name: themelib_sap_horizon
+server:
+  customMiddleware:
+    - name: sap-fe-mockserver
+      beforeMiddleware: compression
+      configuration:
+        mountPath: /
+        services:
+          - urlPath: /sap/opu/odata4/sap/zpseffrthdr_o4/srvd/sap/z_ui_pseffrthdr/0001
+            metadataPath: ./webapp/localService/metadata_main.xml
+            mockdataPath: ./webapp/localService/mockdata/main
+          - urlPath: /sap/opu/odata4/sap/zpseffrtrate_o4/srvd/sap/z_ui_pseffrtrate/0001
+            metadataPath: ./webapp/localService/metadata_rate.xml
+            mockdataPath: ./webapp/localService/mockdata/rate

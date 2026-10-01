@@ -14,6 +14,14 @@ sap.ui.define(["zps/rfpeffortmgmt/util/Constants"], function (Constants) {
 			return sStatus === Constants.STATUS.WON ? "Success" : "Warning";
 		},
 
+		isEstimate: function (sStatus) {
+			return sStatus === Constants.STATUS.ESTIMATE;
+		},
+
+		isWon: function (sStatus) {
+			return sStatus === Constants.STATUS.WON;
+		},
+
 		phaseText: function (sPhase) {
 			return sPhase ? sPhase.charAt(0) + sPhase.slice(1).toLowerCase() : "";
 		}

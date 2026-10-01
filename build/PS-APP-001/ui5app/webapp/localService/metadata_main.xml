@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+    <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Measures.V1.xml">
+    <edmx:Include Alias="Measures" Namespace="Org.OData.Measures.V1"/>
+  </edmx:Reference>
+  <edmx:DataServices>
+    <Schema Namespace="com.sap.gateway.srvd.z_ui_pseffrthdr.v0001" Alias="SAP__self" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="RfpEffortType">
+        <Key><PropertyRef Name="EffortId"/></Key>
+        <Property Name="EffortId" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="RfpName" Type="Edm.String" MaxLength="100"/>
+        <Property Name="CustomerName" Type="Edm.String" MaxLength="100"/>
+        <Property Name="OwnerUser" Type="Edm.String" MaxLength="12"/>
+        <Property Name="Status" Type="Edm.String" MaxLength="3"/>
+        <Property Name="CreatedBy" Type="Edm.String" MaxLength="12"/>
+        <Property Name="CreatedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="ChangedBy" Type="Edm.String" MaxLength="12"/>
+        <Property Name="ChangedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="LocalChangedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <NavigationProperty Name="_Item" Type="Collection(com.sap.gateway.srvd.z_ui_pseffrthdr.v0001.RfpEffortItemType)" Partner="_Header"/>
+      </EntityType>
+      <EntityType Name="RfpEffortItemType">
+        <Key><PropertyRef Name="EffortId"/><PropertyRef Name="ItemId"/></Key>
+        <Property Name="EffortId" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="ItemId" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="EntryType" Type="Edm.String" MaxLength="3"/>
+        <Property Name="SapModule" Type="Edm.String" MaxLength="10"/>
+        <Property Name="ActivatePhase" Type="Edm.String" MaxLength="10"/>
+        <Property Name="Role" Type="Edm.String" MaxLength="30"/>
+        <Property Name="EffortHours" Type="Edm.Decimal" Precision="9" Scale="2"/>
+        <Property Name="Cost" Type="Edm.Decimal" Precision="15" Scale="2"/>
+        <Property Name="Currency" Type="Edm.String" MaxLength="5"/>
+        <Property Name="CostManualOverride" Type="Edm.String" MaxLength="1"/>
+        <Property Name="ActivityDesc" Type="Edm.String" MaxLength="255"/>
+        <Property Name="CreatedBy" Type="Edm.String" MaxLength="12"/>
+        <Property Name="CreatedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="ChangedBy" Type="Edm.String" MaxLength="12"/>
+        <Property Name="ChangedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="LocalChangedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <NavigationProperty Name="_Header" Type="com.sap.gateway.srvd.z_ui_pseffrthdr.v0001.RfpEffortType" Nullable="false" Partner="_Item">
+          <ReferentialConstraint Property="EffortId" ReferencedProperty="EffortId"/>
+        </NavigationProperty>
+      </EntityType>
+      <EntityType Name="EffortDashboardType">
+        <Key>
+          <PropertyRef Name="EffortId"/><PropertyRef Name="SapModule"/><PropertyRef Name="ActivatePhase"/>
+          <PropertyRef Name="EntryType"/><PropertyRef Name="Currency"/>
+        </Key>
+        <Property Name="EffortId" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="SapModule" Type="Edm.String" MaxLength="10" Nullable="false"/>
+        <Property Name="ActivatePhase" Type="Edm.String" MaxLength="10" Nullable="false"/>
+        <Property Name="EntryType" Type="Edm.String" MaxLength="3" Nullable="false"/>
+        <Property Name="Currency" Type="Edm.String" MaxLength="5" Nullable="false"/>
+        <Property Name="RfpName" Type="Edm.String" MaxLength="100"/>
+        <Property Name="CustomerName" Type="Edm.String" MaxLength="100"/>
+        <Property Name="TotalEffort" Type="Edm.Decimal" Precision="31" Scale="2"/>
+        <Property Name="TotalCost" Type="Edm.Decimal" Precision="31" Scale="2"/>
+      </EntityType>
+      <EntityType Name="RoleValueHelpType">
+        <Key><PropertyRef Name="Role"/></Key>
+        <Property Name="Role" Type="Edm.String" MaxLength="30" Nullable="false"/>
+      </EntityType>
+      <Action Name="markAsWon" IsBound="true" EntitySetPath="_it">
+        <Parameter Name="_it" Type="com.sap.gateway.srvd.z_ui_pseffrthdr.v0001.RfpEffortType" Nullable="false"/>
+        <ReturnType Type="com.sap.gateway.srvd.z_ui_pseffrthdr.v0001.RfpEffortType" Nullable="false"/>
+      </Action>
+      <EntityContainer Name="Container">
+        <EntitySet Name="RfpEffort" EntityType="com.sap.gateway.srvd.z_ui_pseffrthdr.v0001.RfpEffortType">
+          <NavigationPropertyBinding Path="_Item" Target="RfpEffortItem"/>
+        </EntitySet>
+        <EntitySet Name="RfpEffortItem" EntityType="com.sap.gateway.srvd.z_ui_pseffrthdr.v0001.RfpEffortItemType">
+          <NavigationPropertyBinding Path="_Header" Target="RfpEffort"/>
+        </EntitySet>
+        <EntitySet Name="EffortDashboard" EntityType="com.sap.gateway.srvd.z_ui_pseffrthdr.v0001.EffortDashboardType"/>
+        <EntitySet Name="RoleValueHelp" EntityType="com.sap.gateway.srvd.z_ui_pseffrthdr.v0001.RoleValueHelpType"/>
+      </EntityContainer>
+      <Annotations Target="com.sap.gateway.srvd.z_ui_pseffrthdr.v0001.RfpEffortItemType/Cost">
+        <Annotation Term="Org.OData.Measures.V1.ISOCurrency" Path="Currency"/>
+      </Annotations>
+      <Annotations Target="com.sap.gateway.srvd.z_ui_pseffrthdr.v0001.EffortDashboardType/TotalCost">
+        <Annotation Term="Org.OData.Measures.V1.ISOCurrency" Path="Currency"/>
+      </Annotations>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

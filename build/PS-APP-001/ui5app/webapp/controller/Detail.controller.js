@@ -93,15 +93,10 @@ sap.ui.define([
 				oData.Cost = String(oLine.Cost);
 				oData.Currency = oLine.Currency;
 			}
-			var oContext = this.byId(this._sTableId).getBinding("items").create(oData, false, true);
-			oContext.created().then(function () {
+			this.createEntry(this.byId(this._sTableId).getBinding("items"), oData, true).then(function () {
 				this._pDialog.then(function (oDialog) { oDialog.close(); });
 				this.showSuccess("savedSuccess");
-			}.bind(this)).catch(function (oError) {
-				if (!oError.canceled) {
-					this.showError(oError);
-				}
-			}.bind(this));
+			}.bind(this)).catch(this.showError.bind(this));
 		},
 
 		onAddLineCancel: function () {

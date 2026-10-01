@@ -1,0 +1,38 @@
+[
+ {
+  "EffortId": "6513270e-269e-0d37-f2a7-4de452e6b438",
+  "RfpName": "S/4HANA Greenfield - Contoso",
+  "CustomerName": "Contoso Ltd",
+  "OwnerUser": "ANKUR",
+  "Status": "WON",
+  "CreatedBy": "ANKUR",
+  "CreatedAt": "2026-09-20T09:00:00Z",
+  "ChangedBy": "ANKUR",
+  "ChangedAt": "2026-09-20T09:00:00Z",
+  "LocalChangedAt": "2026-09-20T09:00:00Z"
+ },
+ {
+  "EffortId": "d23f0824-128b-2f33-0c5c-7fd0a6a3a450",
+  "RfpName": "Finance Transformation RFP",
+  "CustomerName": "Fabrikam Inc",
+  "OwnerUser": "PRESALES1",
+  "Status": "EST",
+  "CreatedBy": "PRESALES1",
+  "CreatedAt": "2026-09-20T09:00:00Z",
+  "ChangedBy": "PRESALES1",
+  "ChangedAt": "2026-09-20T09:00:00Z",
+  "LocalChangedAt": "2026-09-20T09:00:00Z"
+ },
+ {
+  "EffortId": "9531985d-5d9d-c9f8-1818-e811892f902b",
+  "RfpName": "Supply Chain Upgrade",
+  "CustomerName": "Northwind Traders",
+  "OwnerUser": "ANKUR",
+  "Status": "EST",
+  "CreatedBy": "ANKUR",
+  "CreatedAt": "2026-09-20T09:00:00Z",
+  "ChangedBy": "ANKUR",
+  "ChangedAt": "2026-09-20T09:00:00Z",
+  "LocalChangedAt": "2026-09-20T09:00:00Z"
+ }
+]

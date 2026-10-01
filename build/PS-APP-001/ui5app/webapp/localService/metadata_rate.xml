@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Measures.V1.xml">
+    <edmx:Include Alias="Measures" Namespace="Org.OData.Measures.V1"/>
+  </edmx:Reference>
+  <edmx:DataServices>
+    <Schema Namespace="com.sap.gateway.srvd.z_ui_pseffrtrate.v0001" Alias="SAP__self" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="CostRateType">
+        <Key><PropertyRef Name="SapModule"/><PropertyRef Name="Role"/></Key>
+        <Property Name="SapModule" Type="Edm.String" MaxLength="10" Nullable="false"/>
+        <Property Name="Role" Type="Edm.String" MaxLength="30" Nullable="false"/>
+        <Property Name="Rate" Type="Edm.Decimal" Precision="15" Scale="2"/>
+        <Property Name="Currency" Type="Edm.String" MaxLength="5"/>
+        <Property Name="CreatedBy" Type="Edm.String" MaxLength="12"/>
+        <Property Name="CreatedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="ChangedBy" Type="Edm.String" MaxLength="12"/>
+        <Property Name="ChangedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="LocalChangedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+      </EntityType>
+      <EntityContainer Name="Container">
+        <EntitySet Name="CostRate" EntityType="com.sap.gateway.srvd.z_ui_pseffrtrate.v0001.CostRateType"/>
+      </EntityContainer>
+      <Annotations Target="com.sap.gateway.srvd.z_ui_pseffrtrate.v0001.CostRateType/Rate">
+        <Annotation Term="Org.OData.Measures.V1.ISOCurrency" Path="Currency"/>
+      </Annotations>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

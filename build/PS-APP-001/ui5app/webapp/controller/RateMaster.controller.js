@@ -35,20 +35,15 @@ sap.ui.define([
 
 		onAddConfirm: function () {
 			var oData = this.getView().getModel("newrate").getData();
-			var oContext = this.byId("rateTable").getBinding("items").create({
+			this.createEntry(this.byId("rateTable").getBinding("items"), {
 				SapModule: oData.SapModule,
 				Role: oData.Role,
 				Rate: oData.Rate === "" ? "0" : String(oData.Rate),
 				Currency: oData.Currency
-			});
-			oContext.created().then(function () {
+			}).then(function () {
 				this._pDialog.then(function (oDialog) { oDialog.close(); });
 				this.showSuccess("savedSuccess");
-			}.bind(this)).catch(function (oError) {
-				if (!oError.canceled) {
-					this.showError(oError);
-				}
-			}.bind(this));
+			}.bind(this)).catch(this.showError.bind(this));
 		},
 
 		onAddCancel: function () {

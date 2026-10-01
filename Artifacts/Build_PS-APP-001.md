@@ -8,13 +8,14 @@
 | Linked Technical Spec Ref | TechnicalSpec_PS-APP-001.md (v1.2) |
 | Linked Functional Spec Ref | FunctionalSpec_PS-APP-001.md |
 | Developer | ankur.gupta04@nagarro.com (SAP user ANKUR) |
-| Version | 1.1 |
+| Version | 1.2 |
 
 ### Version History
 | Version | Date | Changed By | Change Summary | Status at time |
 |---|---|---|---|---|
 | 1.0 | 2026-10-01 | ankur.gupta04@nagarro.com | Initial creation. Backend built and unit-tested in DEV; UI5 app built locally; deployment, service publishing and authorization setup still open (see Sections 10–12). | In Progress |
 | 1.1 | 2026-10-01 | ankur.gupta04@nagarro.com | Custom authorization object `ZPS_EFRT` and all code-level authorization checks removed at the user's instruction (not required); TS now v1.2, FS §9 now v1.1. "Mark as Won" is now tested end to end. | In Progress |
+| 1.2 | 2026-10-01 | ankur.gupta04@nagarro.com | User skipped PFCG roles and UI5 deployment and reports the service bindings as published. UI5 app previewed locally against a mock OData V4 backend (`npm run start:mock`); two UI defects found and fixed (Actuals tab shown on Estimate RFPs; failed create showed no error). | In Progress |
 
 ## 2. Development Environment & Transport
 | Item | Value |
@@ -113,9 +114,9 @@ Total: 22 of 22 passed (header/item pool 18, rate pool 4). Approach: rule logic 
 - Cost arithmetic assumes 2-decimal currencies.
 - The Role list is the set of roles that exist in the Cost Rate Master.
 - **Manual dependencies outstanding** (cannot be done through the connected tooling):
-  - Create the four `Z_PS_EFFORT_*` roles in PFCG and assign them the service start access: all four get `Z_UI_PSEFFRTHDR`; only the roles that maintain rates (by default `Z_PS_EFFORT_DELIVERY`) get `Z_UI_PSEFFRTRATE`. No custom authorization object is needed.
-  - Publish `ZPSEFFRTHDR_O4` and `ZPSEFFRTRATE_O4` from a client where publishing is allowed (client 110 refuses it).
-  - Provide the SAP system URL and credentials (or deploy through ADT) so `npm run deploy` can create `ZPS_RFPEFFORT` under PS4K902111.
+  - (Skipped by the user for now) Create the four `Z_PS_EFFORT_*` roles in PFCG and assign them the service start access: all four get `Z_UI_PSEFFRTHDR`; only the roles that maintain rates (by default `Z_PS_EFFORT_DELIVERY`) get `Z_UI_PSEFFRTRATE`. No custom authorization object is needed.
+  - ~~Publish the service bindings~~ — done per the user.
+  - (Skipped by the user for now) Provide the SAP system URL and credentials (or deploy through ADT) so `npm run deploy` can create `ZPS_RFPEFFORT` under PS4K902111.
   - Create the Launchpad catalog/tile and target mapping once the app is deployed.
 
 ## 12. Issues Log
@@ -127,9 +128,11 @@ Total: 22 of 22 passed (header/item pool 18, rate pool 4). Approach: rule logic 
 | I-04 | Objects the TS inventory omitted but the build needs: role value-help view, message 006, item `CURRENCY`, BSP deploy container | Added; TS v1.1; naming gap logged in `config/naming-standards.json` | None | None | Closed |
 | I-05 | FS contradicts itself on a missing rate: Rule 4 says "no warning", §8 lists a non-blocking warning | Implemented the non-blocking warning (message 004) | None | None | ⚠️ Needs FS clarification |
 | I-06 | FS §5 makes Activity Description mandatory for actual lines but TS rule 6 does not list it | Implemented per FS §5 | None | None | Closed |
-| I-07 | Service bindings cannot be published in the customizing client | Manual publish where allowed (Section 11) | Possible | None | Open |
+| I-07 | Service bindings cannot be published in the customizing client | User reports publishing is now done (not re-verified from here) | None | None | Closed |
 | I-08 | Custom authorization object `ZPS_EFRT` could not be created through the tooling | Removed from scope at the user's instruction (not required); code, TS v1.2 and FS §9 v1.1 updated. Roles are created manually in PFCG | None | None | Closed |
-| I-09 | UI5 app built but not deployed or exercised against the live service | Needs SAP URL and credentials (Section 11) | Possible | None | Open |
+| I-09 | UI5 app built but not deployed or exercised against the live service | User skipped deployment. Previewed locally on a mock backend only; live-service behaviour is untested. Mock files (`webapp/test`, `webapp/localService`) are excluded from the deploy build | Possible | None | Open (deferred by user) |
+| I-13 | Preview found: Actuals tab visible on Estimate RFPs (V4 string formatted to boolean before the formatter) | Formatter bindings use `targetType: 'any'` | None | None | Closed |
+| I-14 | Preview found: a failed create (negative effort) showed no message because V4 does not reject `created()` | `BaseController.createEntry` surfaces the server error in a dialog and removes the transient row | None | None | Closed |
 | I-10 | Message class was created without messages by the batch call | Messages written by update and re-activated; verified by read-back | None | None | Closed |
 | I-12 | `strict(2)` requires an authorization clause even without custom checks | Behavior definitions keep a bare `authorization master ( global )` / `dependent` declaration with empty handlers | None | None | Closed |
 | I-11 | Local abaplint cannot parse RAP behavior pools | Local lint skipped for those writes; SAP syntax check and activation used | None | None | Closed |

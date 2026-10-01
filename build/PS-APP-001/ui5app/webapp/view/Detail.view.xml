@@ -9,7 +9,7 @@
 				text="{i18n>markAsWon}"
 				type="Emphasized"
 				icon="sap-icon://accept"
-				visible="{= ${Status} === 'EST'}"
+				visible="{parts: [{path: 'Status', targetType: 'any'}], formatter: '.formatter.isEstimate'}"
 				press=".onMarkAsWon" />
 			<Button text="{i18n>dashboard}" icon="sap-icon://bar-chart" press=".onDashboard" />
 		</headerContent>
@@ -78,7 +78,7 @@
 						key="actuals"
 						text="{i18n>tabActuals}"
 						icon="sap-icon://time-entry-request"
-						visible="{= ${Status} === 'WON'}">
+						visible="{parts: [{path: 'Status', targetType: 'any'}], formatter: '.formatter.isWon'}">
 						<Table
 							id="actualTable"
 							items="{

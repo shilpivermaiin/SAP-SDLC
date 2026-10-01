@@ -60,21 +60,15 @@ sap.ui.define([
 
 		onCreateConfirm: function () {
 			var oData = this.getView().getModel("new").getData();
-			var oBinding = this.byId("rfpTable").getBinding("items");
-			var oContext = oBinding.create({
+			this.createEntry(this.byId("rfpTable").getBinding("items"), {
 				RfpName: oData.RfpName,
 				CustomerName: oData.CustomerName,
 				OwnerUser: oData.OwnerUser
-			});
-			oContext.created().then(function () {
+			}).then(function (oContext) {
 				this._pDialog.then(function (oDialog) { oDialog.close(); });
 				this.showSuccess("savedSuccess");
 				this.getRouter().navTo("detail", { effortId: oContext.getProperty("EffortId") });
-			}.bind(this)).catch(function (oError) {
-				if (!oError.canceled) {
-					this.showError(oError);
-				}
-			}.bind(this));
+			}.bind(this)).catch(this.showError.bind(this));
 		},
 
 		onCreateCancel: function () {

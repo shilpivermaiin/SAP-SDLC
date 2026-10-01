@@ -1,0 +1,90 @@
+[
+ {
+  "SapModule": "SD",
+  "Role": "Consultant",
+  "Rate": "100",
+  "Currency": "USD",
+  "CreatedBy": "ANKUR",
+  "CreatedAt": "2026-09-20T09:00:00Z",
+  "ChangedBy": "ANKUR",
+  "ChangedAt": "2026-09-20T09:00:00Z",
+  "LocalChangedAt": "2026-09-20T09:00:00Z"
+ },
+ {
+  "SapModule": "SD",
+  "Role": "Senior Consultant",
+  "Rate": "140",
+  "Currency": "USD",
+  "CreatedBy": "ANKUR",
+  "CreatedAt": "2026-09-20T09:00:00Z",
+  "ChangedBy": "ANKUR",
+  "ChangedAt": "2026-09-20T09:00:00Z",
+  "LocalChangedAt": "2026-09-20T09:00:00Z"
+ },
+ {
+  "SapModule": "MM",
+  "Role": "Consultant",
+  "Rate": "95",
+  "Currency": "USD",
+  "CreatedBy": "ANKUR",
+  "CreatedAt": "2026-09-20T09:00:00Z",
+  "ChangedBy": "ANKUR",
+  "ChangedAt": "2026-09-20T09:00:00Z",
+  "LocalChangedAt": "2026-09-20T09:00:00Z"
+ },
+ {
+  "SapModule": "FI",
+  "Role": "Consultant",
+  "Rate": "105",
+  "Currency": "USD",
+  "CreatedBy": "ANKUR",
+  "CreatedAt": "2026-09-20T09:00:00Z",
+  "ChangedBy": "ANKUR",
+  "ChangedAt": "2026-09-20T09:00:00Z",
+  "LocalChangedAt": "2026-09-20T09:00:00Z"
+ },
+ {
+  "SapModule": "FI",
+  "Role": "Architect",
+  "Rate": "170",
+  "Currency": "USD",
+  "CreatedBy": "ANKUR",
+  "CreatedAt": "2026-09-20T09:00:00Z",
+  "ChangedBy": "ANKUR",
+  "ChangedAt": "2026-09-20T09:00:00Z",
+  "LocalChangedAt": "2026-09-20T09:00:00Z"
+ },
+ {
+  "SapModule": "CO",
+  "Role": "Consultant",
+  "Rate": "105",
+  "Currency": "USD",
+  "CreatedBy": "ANKUR",
+  "CreatedAt": "2026-09-20T09:00:00Z",
+  "ChangedBy": "ANKUR",
+  "ChangedAt": "2026-09-20T09:00:00Z",
+  "LocalChangedAt": "2026-09-20T09:00:00Z"
+ },
+ {
+  "SapModule": "PP",
+  "Role": "Consultant",
+  "Rate": "98",
+  "Currency": "USD",
+  "CreatedBy": "ANKUR",
+  "CreatedAt": "2026-09-20T09:00:00Z",
+  "ChangedBy": "ANKUR",
+  "ChangedAt": "2026-09-20T09:00:00Z",
+  "LocalChangedAt": "2026-09-20T09:00:00Z"
+ },
+ {
+  "SapModule": "PS",
+  "Role": "Consultant",
+  "Rate": "110",
+  "Currency": "USD",
+  "CreatedBy": "ANKUR",
+  "CreatedAt": "2026-09-20T09:00:00Z",
+  "ChangedBy": "ANKUR",
+  "ChangedAt": "2026-09-20T09:00:00Z",
+  "LocalChangedAt": "2026-09-20T09:00:00Z"
+ }
+]
