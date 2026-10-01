@@ -9,15 +9,16 @@
 | Linked BRD Ref | [BRD_RecentPurchaseOrders.md](BRD_RecentPurchaseOrders.md) |
 | Linked Solution Architect Ref | [SolutionArchitect_RecentPurchaseOrders.md](SolutionArchitect_RecentPurchaseOrders.md) |
 | Author | Not provided |
-| Version | 1.0 |
+| Version | 1.1 |
 
 ### Version History
 | Version | Date | Changed By | Change Summary | Status at time |
 |---|---|---|---|---|
 | 1.0 | 2026-10-01 | Not provided | Initial creation | Frozen |
+| 1.1 | 2026-10-01 | Not provided | Access restriction changed from company code/plant to standard purchasing authorisation (purchasing organisation, purchasing group, PO type), at the user's request during `/TechnicalSpec`. Rules 1 and 5, Sections 5, 9, 10 and 11 updated. Two points previously left for the technical designer (PO identification, release status values) confirmed on the system. | Frozen |
 
 ## 2. Business Process Overview
-Procurement buyers open one application that lists every purchase order (PO) created in SAP in the last 30 days, one line per PO, so they can monitor newly raised purchasing activity without compiling the list by hand. The list is read-only. It covers all company codes and plants the user is authorised to see.
+Procurement buyers open one application that lists every purchase order (PO) created in SAP in the last 30 days, one line per PO, so they can monitor newly raised purchasing activity without compiling the list by hand. The list is read-only. It covers every PO the user is authorised to see under standard purchasing authorisation (purchasing organisation, purchasing group and PO type).
 
 Reuse and gap: SAP's standard PO list was assessed in the Solution Architect write-up. It does not guarantee the exact one-line-per-PO layout with a default last-30-days window, so a small custom application fills that gap.
 
@@ -36,18 +37,18 @@ The buyer opens the application from their SAP launchpad. Data is read on demand
 | Field | Mandatory? | Source | Default Value |
 |---|---|---|---|
 | Creation-date window | n/a (not user-editable) | System date | Last 30 days: today and the 30 days before it, based on each PO's creation date |
-| Company codes / plants | n/a (not user-editable) | User's authorisations | All the user is authorised to see |
+| Purchasing authorisations | n/a (not user-editable) | User's authorisations | All POs the user is authorised to see |
 
 The user supplies no input and has no filters.
 
 ## 6. Business Rules / Processing Logic
 | # | Rule Type | Business Rule | Condition | Result / Action on Fail |
 |---|---|---|---|---|
-| 1 | Validation | Only purchase orders are listed | Document is a purchase order, not another purchasing document | Other documents are excluded |
+| 1 | Validation | Only purchase orders are listed | Document is a purchase order (document category F), not another purchasing document | Other documents are excluded |
 | 2 | Validation | Only POs in the last 30 days are listed | PO creation date is within the last 30 days, inclusive of the day exactly 30 days ago and today | POs outside the window are excluded |
-| 3 | Validation | Users see only POs they are authorised for | User is authorised for the PO's company code / plant | Unauthorised POs are not shown |
+| 3 | Validation | Users see only POs they are authorised for under standard purchasing authorisation | User is authorised for the PO's purchasing organisation, purchasing group and PO type | Unauthorised POs are not shown |
 | 4 | Derivation | Total net value of a PO is the sum of its item net values, in the PO currency | Always, per PO | No conversion across currencies |
-| 5 | Derivation | Approval (release) status is taken from the PO's release information | PO has a release status | If no release status applies, the column is shown blank |
+| 5 | Derivation | Approval (release) status is taken from the PO's release information | PO has a release status | If no release status applies, the column is shown blank. Release values in use on the system: B (not yet released) and R (released) |
 | 6 | Validation | POs flagged for deletion remain in the list | ⚠️ Assumed: BRD says every PO created in the window | Listed like any other PO |
 | 7 | Validation | List is sorted by creation date, newest first | Always | n/a |
 
@@ -78,8 +79,8 @@ The user supplies no input and has no filters.
 | Purchasing organisation | Purchasing Document Header | `EKKO` | Purchasing organisation | `EKORG` | Header | Direct |
 | Total net value | Purchasing Document Item | `EKPO` | Net order value in PO currency | `NETWR` | Item | Sum over the PO's items |
 | Currency | Purchasing Document Header | `EKKO` | Currency key | `WAERS` | Header | Direct; shown with the total |
-| Approval (release) status | Purchasing Document Header | `EKKO` | Release indicator | `FRGKE` | Header | Direct; ⚠️ meaning of values to be confirmed with the technical designer |
-| PO-only filter (rule 1) | Purchasing Document Header | `EKKO` | Purchasing document category | `BSTYP` | Header | ⚠️ value for purchase orders to be confirmed with the technical designer |
+| Approval (release) status | Purchasing Document Header | `EKKO` | Release indicator | `FRGKE` | Header | Direct; values in use on the system: B (not yet released), R (released) |
+| PO-only filter (rule 1) | Purchasing Document Header | `EKKO` | Purchasing document category | `BSTYP` | Header | Value F = Purchase Order (confirmed on the system) |
 
 All field names above were verified on the connected SAP system (PS4_110).
 
@@ -116,16 +117,18 @@ All field names above were verified on the connected SAP system (PS4_110).
 
 ## 9. Authorization Requirements
 - Buyers need access to the application and display authorisation for purchase orders.
-- Each user sees only POs in the company codes and plants they are authorised for.
+- Each user sees only POs they are authorised for under standard purchasing authorisation: purchasing organisation, purchasing group and PO type (display activity). Company code and plant are not used to restrict the list.
 - Developers and Basis/Security roles are covered in the Solution Architect write-up and `/TechnicalSpec`.
 
 ## 10. Assumptions, Dependencies & Technical Spec Input Notes
 **Assumptions**
-- ⚠️ Only purchase orders are included (rule 1). The value that identifies a PO is confirmed by the technical designer.
 - ⚠️ POs flagged for deletion are still listed (rule 6).
 - ⚠️ Total net value is the sum of item net values in the PO currency, with no cross-currency conversion (rule 4).
 - ⚠️ Volume and response expectations were not provided. Assumed: a modest 30-day volume, normal on-screen response, on-demand use.
 - ⚠️ Author and business owner names were not provided.
+
+**Change Log**
+- 2026-10-01 (v1.1): at the user's request during `/TechnicalSpec`, the access restriction changed from company code/plant to standard purchasing authorisation, because the standard released purchase-order data already enforces purchasing organisation, group and PO type and a PO header has no plant. Applied to this FS only. The BRD and Solution Architect write-up still say "company codes and plants" in their wording and were intentionally left unchanged at the user's direction. Nothing has been built, so there is no rebuild or re-test impact.
 
 **Dependencies**
 - Procurement lead: design sign-off and test data.
@@ -137,16 +140,15 @@ All field names above were verified on the connected SAP system (PS4_110).
 | Launchpad access to the application | Tile and role assignment for buyers | Basis / Security | None identified |
 
 ### Technical Spec Input Notes
-- Confirm the identifying value for purchase orders and the meaning of the release indicator values.
 - Decide how the total net value is derived at scale, and how the sorted, windowed read is made efficient.
 - Naming and object design are decided in `/TechnicalSpec`.
 
 ## 11. Test Scenarios (UAT-level)
 | # | Scenario | Type | Expected Result |
 |---|---|---|---|
-| 1 | A PO created 5 days ago in an authorised company code | Positive | PO appears with all eight columns filled |
+| 1 | A PO created 5 days ago in an authorised purchasing organisation | Positive | PO appears with all eight columns filled |
 | 2 | A PO created exactly 30 days ago | Positive | PO appears (window includes day 30) |
-| 3 | A buyer authorised for some company codes only | Positive | Only POs from those company codes are listed |
+| 3 | A buyer authorised for some purchasing organisations only | Positive | Only POs from those purchasing organisations are listed |
 | 4 | A PO created 31 days ago | Negative | PO does not appear |
 | 5 | A buyer with no PO authorisation opens the app | Negative | No rows; standard no-authorisation message |
 | 6 | No POs exist in the last 30 days | Negative | Empty-result message is shown |
@@ -155,7 +157,7 @@ All field names above were verified on the connected SAP system (PS4_110).
 | Data Needed | Master/Transactional | Owner | Required By |
 |---|---|---|---|
 | POs created 5 days ago, exactly 30 days ago and 31 days ago | Transactional | Procurement lead | Before component test |
-| POs in an authorised and an unauthorised company code | Transactional | Procurement lead | Before component test |
+| POs in an authorised and an unauthorised purchasing organisation | Transactional | Procurement lead | Before component test |
 | Test users with and without PO authorisation | Master | Basis / Security | Before component test |
 
 ---

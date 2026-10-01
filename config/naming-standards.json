@@ -57,7 +57,8 @@
     "compositeView": "Z_C_{ENTITY}",
     "consumptionView": "Z_C_{ENTITY}",
     "customEntity": "Z_I_{ENTITY}CE",
-    "metadataExtension": "Z_C_{ENTITY}_MDE"
+    "metadataExtension": "Z_C_{ENTITY}_MDE",
+    "accessControl": "Same name as the CDS view it protects (e.g. Z_C_{ENTITY}); added for MM-RPT-001 because no pattern existed"
   },
 
   "rapArtifacts": {
