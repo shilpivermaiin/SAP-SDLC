@@ -72,7 +72,8 @@
   "odataFiori": {
     "classicODataService": "Z{MODULE}_{PURPOSE}_SRV",
     "fioriAppId": "z{module}.{purpose}",
-    "fioriTile": "Z_{MODULE}_{PURPOSE}_TILE"
+    "fioriTile": "Z_{MODULE}_{PURPOSE}_TILE",
+    "fioriCatalog": "Z_{MODULE}_{PURPOSE}_CAT (added for MM-RPT-001 because no pattern existed)"
   },
 
   "enhancements": {
