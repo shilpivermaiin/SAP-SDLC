@@ -16,3 +16,7 @@ Date: 2026-10-01
 - Detail level: One line per PO
 
 **AI:** Drafted BRD in chat (not yet saved); unanswered points carried as labelled assumptions (30-day definition, priority, complexity, requester/owner/author names).
+
+**AI:** Presented draft BRD and asked for validation.
+**User:** ok
+**AI:** Treated as confirmation; saved Artifacts/BRD_RecentPurchaseOrders.md and asked for Post-Save approval.
