@@ -9,12 +9,13 @@
 | Linked BRD Ref | BRD_ProjectRFPEffortManagement.md |
 | Linked Solution Architect Ref | SolutionArchitect_ProjectRFPEffortManagement.md |
 | Author | ankur.gupta04@nagarro.com |
-| Version | 1.0 |
+| Version | 1.1 |
 
 ### Version History
 | Version | Date | Changed By | Change Summary | Status at time |
 |---|---|---|---|---|
 | 1.0 | 2026-09-17 | ankur.gupta04@nagarro.com | Initial creation | Frozen |
+| 1.1 | 2026-10-01 | ankur.gupta04@nagarro.com | Authorization requirements simplified at the user's instruction during `/Code`: no function-level restriction on "Mark as Won" or Cost Rate Master maintenance (a custom authorization object is not required). Access is controlled only by which roles can open the app and its services. No business rule, screen or error-handling change. No `/Testing` output existed before this change. | Frozen |
 
 ## 2. Business Process Overview
 A Presales/Bid Manager creates an RFP/project record and enters an effort-and-cost estimate broken down by SAP module and SAP Activate phase. Cost is auto-calculated from a maintained Cost Rate Master (by module and role) but can be manually overridden. Once the proposal is won, the Presales/Bid Manager marks the RFP as "Won," which unlocks actuals entry: project team members then log actual effort, cost, and a short activity description against the same module/phase breakdown. A dashboard compares estimate vs. actual, by module x phase and by RFP/project, org-wide. There is no formal approval gate — entries are saved directly and are visible for review on the dashboard.
@@ -146,9 +147,9 @@ None — all error handling is via on-screen messages; no dedicated error report
 ## 9. Authorization Requirements
 - All four roles (Presales/Bid Manager, Practice/Delivery Lead, Project Manager, Project Team Member) can view all RFPs/projects org-wide, per the confirmed data visibility answer.
 - Cost figures are visible to everyone who can see the RFP/project — no restricted visibility, per the confirmed answer.
-- ⚠️ Assumed: any Presales/Bid Manager (not only the RFP's own owner) can perform the "Mark as Won" transition, since visibility is org-wide rather than owner-restricted — confirm at `/TechnicalSpec` if a stricter, owner-only restriction is actually needed.
-- ⚠️ Assumed: Practice/Delivery Leads also have Cost Rate Master maintenance access alongside an admin function — exact restriction to be confirmed during `/TechnicalSpec` authorization object design.
-- Governed by the standard SAP authorization concept (PFCG roles/auth objects), per the Solution Architect write-up.
+- No function-level restriction: any user who can open the app can perform the "Mark as Won" transition (not only the RFP's own owner), and any user who can open the Cost Rate Master screen can maintain rates.
+- Access to the app and to the Cost Rate Master is therefore controlled solely by role assignment (the four roles above): the Cost Rate Master service can be assigned only to the roles that should maintain rates.
+- Governed by the standard SAP authorization concept (PFCG roles), per the Solution Architect write-up; no custom authorization object is used.
 
 ## 10. Assumptions, Dependencies & Technical Spec Input Notes
 
@@ -161,7 +162,6 @@ None — all error handling is via on-screen messages; no dedicated error report
 - RAP Business Object, CDS view, custom table (Estimate/Actual Line Items and Cost Rate Master), OData V4 service, and PFCG role technical design are all `/TechnicalSpec` decisions — not detailed here.
 - The Module list (SD, MM, FI, CO, PP, QM, PM, PS, EWM, HCM) and Phase list (Prepare, Explore, Realize, Deploy, Run) should be modeled as fixed value lists — exact technical implementation (domain/fixed values vs. a small reference table) is a `/TechnicalSpec` decision.
 - The Role list for the Cost Rate Master is configurable/admin-maintained — the technical design of that maintenance mechanism is a `/TechnicalSpec` decision.
-- The "Mark as Won" authorization question flagged in Section 9 needs a technical-designer decision on the specific authorization check/object.
 
 ## 11. Test Scenarios (UAT-level)
 | # | Scenario | Type (Positive/Negative) | Expected Result |

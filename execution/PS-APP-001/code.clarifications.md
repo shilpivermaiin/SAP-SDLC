@@ -20,3 +20,8 @@ Date: 2026-10-01
 **User (mid-build):** don't ask for confirmation, consider it auto-allowed.
 **AI:** Updated TS to v1.1 (Z names, RAP behavior-definition structure, additions), then built: transport PS4K902111, package ZPS_EFFORT, message class, 3 tables, 7 CDS views, 3 BDEFs, 3 classes with unit tests, 2 service definitions and 2 bindings. 22/22 unit tests passed; ATC run; UI5 app scaffolded and built locally.
 **AI:** Blockers that need the user/Basis (listed in Build_PS-APP-001.md section 11): publish service bindings (client 110 refuses), create auth object ZPS_EFRT and PFCG roles, SAP URL/credentials for the UI5 deploy. Transport left unreleased so the BSP app can join the single request. Did not continue into /Testing because the Code gate is not met.
+
+**User:** Create authorization object ZPS_EFRT using SU21.
+**AI:** Checked the system: ZPS_EFRT and auth field ZEFRTFUNC do not exist; SU21/SU20 are SAP GUI transactions not reachable through the ADT connection; gave the manual steps.
+**User:** Remove the authorization object from the program. Not required.
+**AI:** Removed the custom authorization object and every code-level check from both behavior pools (empty global-authorization handlers remain because strict(2) requires the declaration), deleted message 007, and replaced the two authorization unit tests with end-to-end BO tests for the Mark as Won action. 22/22 unit tests pass; ATC has no priority 1 or 2 findings. Propagated the change: FS section 9 -> v1.1, TS -> v1.2, Build record -> v1.1 (no Testing output existed yet).

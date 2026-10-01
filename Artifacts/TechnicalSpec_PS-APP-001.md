@@ -9,13 +9,14 @@
 | Linked Functional Spec Ref | FunctionalSpec_PS-APP-001.md |
 | Linked Solution Architect Ref | SolutionArchitect_ProjectRFPEffortManagement.md |
 | Author | ankur.gupta04@nagarro.com |
-| Version | 1.1 |
+| Version | 1.2 |
 
 ### Version History
 | Version | Date | Changed By | Change Summary | Status at time |
 |---|---|---|---|---|
 | 1.0 | 2026-09-17 | ankur.gupta04@nagarro.com | Initial creation | Frozen |
 | 1.1 | 2026-10-01 | ankur.gupta04@nagarro.com | Raised during `/Code`: (1) all technical object names changed from the `/NGR/` namespace to the `Z` namespace per user instruction; (2) RAP behavior definitions renamed to follow RAP rules (a behavior definition carries its root view's name and the item child entity is defined inside the header definition; projection definition added for the consumption views); (3) additions required to build: role value-help view, message 006, `CURRENCY` on the item table, UI5 deploy container. Business rules, screens and roles are unchanged. No `/Code` or `/Testing` output existed before this change. | Frozen |
+| 1.2 | 2026-10-01 | ankur.gupta04@nagarro.com | Raised during `/Code` at the user's instruction: the custom authorization object `ZPS_EFRT` and all code-level authorization checks are removed (not required). "Mark as Won" and Cost Rate Master maintenance are controlled only by role assignment to the services (FS §9 v1.1). Message 007 removed; the `Z_PS_EFFORT_*` roles remain as the way to grant service access. The behavior definitions keep a bare `authorization master ( global )`/`dependent` declaration with empty handlers because `strict(2)` requires one. | Frozen |
 
 ## 2. Development Object Overview
 - Object type: Custom Object set (3 custom tables, 6 CDS views, 3 RAP Business Objects, 2 OData V4 services, 1 freestyle SAPUI5 app) built on the S/4HANA ABAP stack per the Solution Architect write-up's RAP-based Clean Core approach.
@@ -63,7 +64,6 @@
 | `Z_PS_RFPEFFORT_TILE` | Fiori Tile | New | Launchpad tile for the app |
 | `ZPS_EFFORT` | Message Class | New | All application messages (Section 9) |
 | `ZCX_PS_EFFORT` | Exception Class | New | Programmatic exceptions (e.g., rate lookup failure handling) |
-| `ZPS_EFRT` | Authorization Object | New | Gates "Mark as Won" and Rate Master maintenance (Section 10) |
 | `Z_PS_EFFORT_PRESALES`, `_DELIVERY`, `_PM`, `_TEAM` | PFCG Roles | New | One role per user group defined in FS Section 9 / SA Prerequisites — no new roles introduced beyond those four |
 
 ## 3. Build Approach
@@ -107,7 +107,7 @@ Keys use RAP-standard UUID generation (no number range object required, consiste
 | FS §6, Rule 4 | No rate found — leave cost blank, allow manual entry | Same determination: if no matching Rate Master row, `COST` remains initial; no message raised (per FS, non-blocking, no warning) |
 | FS §6, Rule 5 | Header mandatory fields required | RAP Validation on `Z_I_PSEFFRTHDR`: raises message 003 and blocks save if `RFP_NAME`, `CUSTOMER_NAME`, or `OWNER_USER` is initial |
 | FS §6, Rule 6 | Line mandatory fields required | RAP Validation on `Z_I_PSEFFRTITM`: raises message 003 and blocks save if Module, Phase, Role, or Effort is initial |
-| FS §6, Rule 7 | Status transition Estimate → Won | RAP Action `markAsWon` on `Z_I_PSEFFRTHDR`; determination sets `STATUS = 'WON'`; authorization-checked via `ZPS_EFRT` (Section 10) |
+| FS §6, Rule 7 | Status transition Estimate → Won | RAP Action `markAsWon` on `Z_I_PSEFFRTHDR`; sets `STATUS = 'WON'`; no authorization check (Section 10) |
 | FS §6, Rule 8 | Actuals require "Won" status | RAP Validation on `Z_I_PSEFFRTITM`: if `ENTRY_TYPE = 'ACTUAL'` and associated header `STATUS ≠ 'WON'`, raises message 005 and blocks save |
 | FS §6, Rule 9 | No approval gate | No release/approve action exists in the Behavior Definition by design — standard Create/Update operations persist directly; no additional implementation needed |
 
@@ -140,21 +140,9 @@ Not applicable — no external or other-SAP-system integration is required, per 
 - **Logging:** No Application Log (BAL) or custom Z-log table — per FS Section 8a, no dedicated error report was required; all errors are transient and user-correctable at the point of entry.
 
 ## 10. Authorization Design
-- **Custom Authorization Object:** `ZPS_EFRT`
-  - Field `ACTVT` (standard activity field)
-  - Field `ZEFRTFUNC` (custom field; values: `DISP` display/standard entry, `MARKWON` mark-as-won action, `RATEMNT` Rate Master maintenance)
-  - ⚠️ Assumed: namespaced custom authorization object field-length allowance — to be confirmed with the Basis team/namespace registration before build.
-- **Checks implemented:**
-  - `markAsWon` RAP action (FS Rule 7) — `AUTHORITY-CHECK` against `ZPS_EFRT` with `ZEFRTFUNC = 'MARKWON'`, per FS Section 9's assumption that this is not restricted to the RFP's own owner.
-  - Rate Master maintenance service (`ZPSEFFRTRATE_O4`) — `AUTHORITY-CHECK` against `ZPS_EFRT` with `ZEFRTFUNC = 'RATEMNT'`, per FS Section 9's assumption that Practice/Delivery Leads have maintenance access.
-  - Standard Create/Read/Update on header and item entities — governed by PFCG role assignment to the `Z_UI_PSEFFRTHDR` service's business catalog; all four roles (`Z_PS_EFFORT_PRESALES`, `_DELIVERY`, `_PM`, `_TEAM`) receive equal read/write access, per FS's confirmed org-wide, unrestricted-cost-visibility rule.
-- **PFCG Role → `ZEFRTFUNC` value assignment:**
-  | Role | `ZEFRTFUNC` values assigned |
-  |---|---|
-  | `Z_PS_EFFORT_PRESALES` | DISP, MARKWON |
-  | `Z_PS_EFFORT_DELIVERY` | DISP, RATEMNT |
-  | `Z_PS_EFFORT_PM` | DISP |
-  | `Z_PS_EFFORT_TEAM` | DISP |
+- **No custom authorization object and no code-level authorization checks.** This follows FS §9 (v1.1): any user who can open the app can mark an RFP as Won, and any user who can open the Cost Rate Master screen can maintain rates.
+- **Access control is by role assignment only.** The four PFCG roles (`Z_PS_EFFORT_PRESALES`, `_DELIVERY`, `_PM`, `_TEAM`) grant start access to the `Z_UI_PSEFFRTHDR` service (the main app). Only the roles that should maintain rates (by default `Z_PS_EFFORT_DELIVERY`) are assigned the `Z_UI_PSEFFRTRATE` service. All four roles otherwise have equal read/write access, with cost visible to everyone who can see the RFP/project (FS §9).
+- **Framework declaration.** Because the behavior definitions use `strict ( 2 )`, each declares `authorization master ( global )` (item: `authorization dependent`) and the matching global-authorization handler methods are present with empty bodies. They contain no checks by design.
 
 ## 10a. Transport Strategy
 - One Workbench Request for PS-APP-001, covering all objects listed in Section 2c (package `ZPS_EFFORT`).
@@ -175,7 +163,7 @@ Not applicable — no external or other-SAP-system integration is required, per 
 | 3 | Cost auto-calculates when a matching rate exists | `test_cost_autocalc_with_rate` | `COST = EFFORT_HOURS × RATE`; `COST_MANUAL_OVERRIDE = false` |
 | 4 | Cost remains blank when no matching rate exists | `test_cost_blank_when_no_rate` | `COST` stays initial; no message raised; item still saves |
 | 5 | Actual entry blocked while header status is "Estimate" | `test_actuals_blocked_when_not_won` | Validation raises message 005; save blocked |
-| 6 | "Mark as Won" transitions header status correctly | `test_markaswon_transition` | `STATUS` changes from "Estimate" to "Won" |
+| 6 | "Mark as Won" transitions header status correctly | `test_bo_mark_as_won`, `test_bo_actual_after_won` (run the real action against doubled tables) | `STATUS` changes from "Estimate" to "Won"; an actual line can then be saved |
 | 7 | Mandatory field validation (header and item) | `test_mandatory_field_validation` | Validation raises message 003 for each missing mandatory field |
 
 Test approach: ABAP Unit tests using the CDS Test Double Framework / EML-based test doubles for the RAP behavior pool, isolating each validation/determination/action from actual database persistence.
