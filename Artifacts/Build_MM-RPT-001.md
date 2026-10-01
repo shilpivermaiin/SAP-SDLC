@@ -65,7 +65,7 @@ The system date is fixed to 2026-10-01 through the CDS test framework so the win
 ## 6. Self-Test Against FS Scenarios
 | FS Scenario Ref (Section 11) | Result |
 |---|---|
-| 1. PO created 5 days ago appears with all eight columns | ⚠️ Partly verified. Data layer verified on PS4: the interface view returns every POs in the window (26) with number, date, created by, supplier number and name, company code, purchasing organisation, net total and currency. The visible app and the status column on real data need the deployed app. Real PS4 candidates: POs `4500000647` and `4500000648` (created 2026-09-26). |
+| 1. PO created 5 days ago appears with all eight columns | ⚠️ Partly verified. Data layer verified on PS4: the interface view returns every PO in the window (26) with number, date, created by, supplier number and name, company code, purchasing organisation, net total and currency. The visible app and the status column on real data need the deployed app. Real PS4 candidates: POs `4500000647` and `4500000648` (created 2026-09-26). |
 | 2. PO created exactly 30 days ago appears | ✅ Unit test (day 30) passed. PS4 PO `4500000624` (created 2026-09-01) is exactly on the boundary. |
 | 3. Buyer with some purchasing organisations sees only those POs | ❌ Not yet testable: needs a test user with partial authorisation (manual item M-2). |
 | 4. PO created 31 days ago does not appear | ✅ Unit test (day 31) passed. |
