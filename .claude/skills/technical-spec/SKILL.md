@@ -11,6 +11,8 @@ description: 'Full procedure for the /TechnicalSpec command (Phase 4: Technical 
 
 > **Logging (mandatory):** After the artifact is saved and agreed, apply [.claude/shared/Execution_Logging.md](../../shared/Execution_Logging.md).
 
+> **Git Publishing (mandatory):** After the artifact is saved and agreed, apply [.claude/shared/Git_Workflow.md](../../shared/Git_Workflow.md) to sync this requirement's GitHub branch.
+
 > **Versioning (mandatory):** Before starting work on an existing requirement, check [.claude/shared/Versioning_Policy.md](../../shared/Versioning_Policy.md) — if every document for this requirement is already Frozen/Approved/Complete from `/Scope` through `/Testing`, ask whether this should be raised as Version 2 before editing anything.
 
 > **No onboarding role-check in this phase:** Unlike every other phase, `/TechnicalSpec` does **not** run the [onboarding role-check](../onboarding/SKILL.md) — skip it entirely regardless of who is executing the command. By this phase, every business/functional question is already resolved and frozen upstream (BRD, Solution Architect write-up, FS); TS is a pure design exercise against those fixed inputs, so the executing person's role or technical comfort doesn't change what's asked or how it's phrased. Do not ask the role-check question, do not tag a profile, and do not append to `profile-history.md` for this phase.

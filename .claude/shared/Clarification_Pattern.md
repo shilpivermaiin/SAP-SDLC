@@ -46,6 +46,12 @@ Don't fire a second full round unless the first answer created a new, genuinely 
 ## 6. Never re-ask known information
 Never re-ask something already stated earlier in the conversation, present in a linked upstream artifact, or already tagged in this phase's own clarification record (e.g., don't re-ask the role check twice within the same phase).
 
+**6a. An answer just given is immediately final — don't let intervening actions erase it.** The instant the user selects an option (via `AskUserQuestion` or typed reply), that question is settled for the rest of this phase, full stop — even if the next steps in the same turn involve other tool calls (writing to the clarification log, updating `profile-history.md`, running `git commit`/`git push`, etc.) before the response is composed. Do not:
+- Restate the question as "still waiting on your pick" after the pick has already been received in this same turn or the immediately preceding one.
+- Let a logging/commit/push action that runs *after* the answer cause the next message to fall back to the pre-answer prompt, as if the answer hadn't registered.
+
+Before sending any message that asks the user to choose/confirm something, check: was this exact question already answered in the last one or two turns? If yes, acknowledge that answer and move the workflow forward instead of re-presenting the question. If a tool-call round (logging, committing) needs to happen first, do it silently and then proceed — never resurface the already-answered question as a side effect of narrating those tool calls.
+
 ## 7. Profile does not carry across phases automatically
 Each phase gets its own profile check (Step 0), because different people typically own different phases. Do not assume the Architect who set `/SolutionArchitect`'s profile is the same person who will answer `/FunctionalSpec`'s questions — that phase runs its own check per [.claude/skills/onboarding/SKILL.md](../skills/onboarding/SKILL.md).
 

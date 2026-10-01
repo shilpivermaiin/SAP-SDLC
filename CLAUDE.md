@@ -168,6 +168,7 @@ CLAUDE.md                        # this file — auto-loaded by Claude Code at s
     ├── Clarification_Pattern.md
     ├── clarify.md
     ├── Execution_Logging.md
+    ├── Git_Workflow.md          # per-requirement GitHub branch publishing (branch named after Requirement ID, Artifacts-only)
     ├── Workflow_Overview.md
     └── Versioning_Policy.md     # when a completed requirement re-enters as Version 2, 3, ...
 
@@ -196,6 +197,8 @@ Every skill also runs its own **Onboarding role-check** first (see [.claude/skil
 Every skill also applies [.claude/shared/Execution_Logging.md](.claude/shared/Execution_Logging.md) — a mandatory, silent audit-logging step run after an artifact is saved and agreed, appending a JSON record to `.sapsdlc/logs/<userId>/<yyyy-mm-dd>.json` (gitignored, local only). If the log location or config is unreachable, skip logging silently — never block or fail phase execution because of it.
 
 Every skill also checks [.claude/shared/Versioning_Policy.md](.claude/shared/Versioning_Policy.md) before starting work on a requirement that may already exist. If every document for that requirement is already Frozen/Approved from `/Scope` through `/Testing` (a "Full Lifecycle Complete" requirement) and the user asks to change, regenerate, or add to any phase of it, the skill must ask whether this should be raised as **Version 2** instead of overwriting the frozen documents — never silently edit a closed-out requirement's history.
+
+Every skill also applies [.claude/shared/Git_Workflow.md](.claude/shared/Git_Workflow.md) after its artifact is saved and agreed: each requirement gets its own GitHub branch, named exactly after its Requirement ID, created (as an orphan branch, off the BRD's first Agree in `/Scope`) and kept in sync automatically as each later phase freezes. That branch carries **only** this requirement's own documents from `Artifacts/` — never `.claude/`, `config/`, `execution/`, `knowledge/`, `templates/`, `docs/`, or another requirement's files — so it reads as a clean, requirement-scoped document set when opened on GitHub. It is a one-way publishing view layered on top of the normal flow described in the Golden Rule below; `Artifacts/<file>.md` on the framework's own working branch (`SAP-SDLC`) remains the actual source of truth, and requirement branches are never merged back into it.
 
 [.claude/shared/Workflow_Overview.md](.claude/shared/Workflow_Overview.md) is the descriptive, pictorial (Mermaid) map of the whole six-phase lifecycle — what each phase reads, writes, and hands off to next. It is reference-only and does not add new enforcement beyond the two files above.
 
