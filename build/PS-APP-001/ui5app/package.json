@@ -7,6 +7,7 @@
     "build": "ui5 build --clean-dest",
     "build:deploy": "ui5 build preload --clean-dest --config ui5-deploy.yaml",
     "deploy": "npm run build:deploy && npx --package @sap/ux-ui5-tooling fiori deploy --config ui5-deploy.yaml --yes",
+    "build:demo": "node scripts/build-demo.js",
     "start:mock": "ui5 serve --config ui5-mock.yaml --port 8089 --open test/mock.html"
   },
   "devDependencies": {

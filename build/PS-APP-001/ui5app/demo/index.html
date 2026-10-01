@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Project &amp; RFP Effort Management (demo)</title>
+	<style>
+		#demoBadge { position: fixed; left: 8px; bottom: 8px; z-index: 99999; padding: 4px 10px; border-radius: 12px;
+			background: #0a6ed1; color: #fff; font: 12px Arial, sans-serif; opacity: .9; pointer-events: none; }
+	</style>
+	<!-- Intercepts the OData calls in the browser; must load before UI5 -->
+	<script src="mockserver.js"></script>
+	<script id="sap-ui-bootstrap"
+		src="https://sdk.openui5.org/1.120.50/resources/sap-ui-core.js"
+		data-sap-ui-theme="sap_horizon"
+		data-sap-ui-resourceroots='{"zps.rfpeffortmgmt": "./", "sap.ui.export": "./stubs/"}'
+		data-sap-ui-oninit="module:sap/ui/core/ComponentSupport"
+		data-sap-ui-compatVersion="edge"
+		data-sap-ui-async="true"></script>
+</head>
+<body class="sapUiBody">
+	<div id="demoBadge">Demo &ndash; sample data, changes reset on reload</div>
+	<div data-sap-ui-component data-name="zps.rfpeffortmgmt" data-id="container" data-settings='{"id": "zps.rfpeffortmgmt"}' data-handle-validation="true"></div>
+</body>
+</html>

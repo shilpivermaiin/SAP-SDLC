@@ -1,0 +1,41 @@
+# Publishes the PS-APP-001 static demo (in-browser mock backend, sample data only) to GitHub Pages.
+# One-time setup: repo Settings -> Pages -> Source = "GitHub Actions".
+name: Deploy PS-APP-001 demo
+
+on:
+  push:
+    branches: [main, claude/amazing-dirac-8ggxr4]
+    paths:
+      - "build/PS-APP-001/ui5app/**"
+      - ".github/workflows/deploy-demo.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Build demo
+        working-directory: build/PS-APP-001/ui5app
+        run: npm run build:demo
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/PS-APP-001/ui5app/dist-demo
+      - id: deployment
+        uses: actions/deploy-pages@v4
