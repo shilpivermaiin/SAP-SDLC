@@ -9,12 +9,13 @@
 | Linked BRD Ref | BRD_ProjectRFPEffortManagement.md |
 | Linked Solution Architect Ref | SolutionArchitect_ProjectRFPEffortManagement.md |
 | Author | ankur.gupta04@nagarro.com |
-| Version | 1.1 |
+| Version | 1.2 |
 
 ### Version History
 | Version | Date | Changed By | Change Summary | Status at time |
 |---|---|---|---|---|
 | 1.0 | 2026-09-17 | ankur.gupta04@nagarro.com | Initial creation | Frozen |
+| 1.2 | 2026-11-13 | ankur.gupta04@nagarro.com | Clarified during `/Code` (Build issue I-05) at the user's decision: Business Rule 4 no longer says "no warning"; a missing cost rate shows the informational, non-blocking note already listed in Section 8, error 4. This aligns the rule with the build; no behavior change, so no rebuild, re-test or back-out impact. No `/Testing` output existed before this change. | Frozen |
 | 1.1 | 2026-10-01 | ankur.gupta04@nagarro.com | Authorization requirements simplified at the user's instruction during `/Code`: no function-level restriction on "Mark as Won" or Cost Rate Master maintenance (a custom authorization object is not required). Access is controlled only by which roles can open the app and its services. No business rule, screen or error-handling change. No `/Testing` output existed before this change. | Frozen |
 
 ## 2. Business Process Overview
@@ -75,7 +76,7 @@ Purpose: replace manual spreadsheet-based RFP effort/cost estimation and actuals
 | 1 | Validation | Effort must be zero or positive | Effort < 0 | Error — blocks save |
 | 2 | Validation | Cost must be zero or positive (when manually entered/overridden) | Cost < 0 | Error — blocks save |
 | 3 | Calculation | Auto-calculate line cost | A matching Cost Rate Master entry exists for the line's Module + Role | Cost = Effort (hours) × Rate; populated automatically, remains user-editable |
-| 4 | Derivation | No cost rate found | No Cost Rate Master entry matches the line's Module + Role | Cost field left blank; user may manually enter a cost for that line — no block, no warning |
+| 4 | Derivation | No cost rate found | No Cost Rate Master entry matches the line's Module + Role | Cost field left blank; user may manually enter a cost for that line — no block; an informational, non-blocking on-screen note is shown (see Section 8, error 4) |
 | 5 | Validation | Header mandatory fields must be populated | RFP/Project Name, Customer Name, or Owner is blank | Error — blocks save |
 | 6 | Validation | Line mandatory fields must be populated | Module, Phase, Role, or Effort is blank | Error — blocks save |
 | 7 | Derivation | Status transition | Presales/Bid Manager manually marks the RFP/project "Won" | Status changes from "Estimate" to "Won"; Actuals entry becomes available; Estimate lines remain visible as read-only reference |

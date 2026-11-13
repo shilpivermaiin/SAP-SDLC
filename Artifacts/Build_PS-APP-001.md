@@ -6,15 +6,16 @@
 | Object ID | PS-APP-001 |
 | Object Name | Project & RFP Effort Management (Fiori App) |
 | Linked Technical Spec Ref | TechnicalSpec_PS-APP-001.md (v1.2) |
-| Linked Functional Spec Ref | FunctionalSpec_PS-APP-001.md |
+| Linked Functional Spec Ref | FunctionalSpec_PS-APP-001.md (v1.2) |
 | Developer | ankur.gupta04@nagarro.com (SAP user ANKUR) |
-| Version | 1.2 |
+| Version | 1.3 |
 
 ### Version History
 | Version | Date | Changed By | Change Summary | Status at time |
 |---|---|---|---|---|
 | 1.0 | 2026-10-01 | ankur.gupta04@nagarro.com | Initial creation. Backend built and unit-tested in DEV; UI5 app built locally; deployment, service publishing and authorization setup still open (see Sections 10–12). | In Progress |
 | 1.1 | 2026-10-01 | ankur.gupta04@nagarro.com | Custom authorization object `ZPS_EFRT` and all code-level authorization checks removed at the user's instruction (not required); TS now v1.2, FS §9 now v1.1. "Mark as Won" is now tested end to end. | In Progress |
+| 1.3 | 2026-11-13 | ankur.gupta04@nagarro.com | Build resumed. Service binding ZPSEFFRTHDR_O4 re-verified as published. I-05 resolved: FS v1.2 aligns Rule 4 with the non-blocking warning. Attempted transport cleanup and ATC re-run; both blocked (see I-15, I-16). UI5 deployment still outstanding (Fiori deploy connector not connected). | In Progress |
 | 1.2 | 2026-10-01 | ankur.gupta04@nagarro.com | User skipped PFCG roles and UI5 deployment and reports the service bindings as published. UI5 app previewed locally against a mock OData V4 backend (`npm run start:mock`); two UI defects found and fixed (Actuals tab shown on Estimate RFPs; failed create showed no error). | In Progress |
 
 ## 2. Development Environment & Transport
@@ -126,7 +127,7 @@ Total: 22 of 22 passed (header/item pool 18, rate pool 4). Approach: rule logic 
 | I-02 | `/NGR/` namespace names exceeded system limits (tables 16 chars, auth objects 10 chars); user then switched to the `Z` namespace | TS updated to v1.1 | None | None | Closed |
 | I-03 | RAP rules: a behavior definition carries its root view's name and the item child lives inside the header definition | Renamed in TS v1.1 | None | None | Closed |
 | I-04 | Objects the TS inventory omitted but the build needs: role value-help view, message 006, item `CURRENCY`, BSP deploy container | Added; TS v1.1; naming gap logged in `config/naming-standards.json` | None | None | Closed |
-| I-05 | FS contradicts itself on a missing rate: Rule 4 says "no warning", §8 lists a non-blocking warning | Implemented the non-blocking warning (message 004) | None | None | ⚠️ Needs FS clarification |
+| I-05 | FS contradicts itself on a missing rate: Rule 4 says "no warning", §8 lists a non-blocking warning | Implemented the non-blocking warning (message 004). User decided to keep it; FS v1.2 Rule 4 aligned | None | None | Closed |
 | I-06 | FS §5 makes Activity Description mandatory for actual lines but TS rule 6 does not list it | Implemented per FS §5 | None | None | Closed |
 | I-07 | Service bindings cannot be published in the customizing client | User reports publishing is now done (not re-verified from here) | None | None | Closed |
 | I-08 | Custom authorization object `ZPS_EFRT` could not be created through the tooling | Removed from scope at the user's instruction (not required); code, TS v1.2 and FS §9 v1.1 updated. Roles are created manually in PFCG | None | None | Closed |
@@ -135,6 +136,9 @@ Total: 22 of 22 passed (header/item pool 18, rate pool 4). Approach: rule logic 
 | I-14 | Preview found: a failed create (negative effort) showed no message because V4 does not reject `created()` | `BaseController.createEntry` surfaces the server error in a dialog and removes the transient row | None | None | Closed |
 | I-10 | Message class was created without messages by the batch call | Messages written by update and re-activated; verified by read-back | None | None | Closed |
 | I-12 | `strict(2)` requires an authorization clause even without custom checks | Behavior definitions keep a bare `authorization master ( global )` / `dependent` declaration with empty handlers | None | None | Closed |
+| I-15 | Transport PS4K902111 still lists AUTH ZEFRTFUNC and SUSO ZPS_EFRT from the removed authorization object; removal failed because task PS4K902112 can be changed only by its holder ANKUR and the connector now runs as a different SAP user | Not changed; no ownership change made without approval. Needs ANKUR (or Basis) to remove the two entries in SE09, or approval to reassign the task | None | None | Open |
+| I-16 | ATC re-run on the 11 CDS/service objects again returned no worklist (0 of 11 reported) | Not a pass; covered by activation and by running the views against the database | None | None | Open (tool limitation) |
+| I-17 | Fiori deploy connector (SAP-PS4-110-FIORI-DEPLOY) failed to connect (404) and this sandbox cannot reach the SAP host for `npm run deploy` | UI5 app still not deployed (I-09) | Possible | None | Open |
 | I-11 | Local abaplint cannot parse RAP behavior pools | Local lint skipped for those writes; SAP syntax check and activation used | None | None | Closed |
 
 ## 13. Sign-off
