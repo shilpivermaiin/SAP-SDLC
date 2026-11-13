@@ -4,3 +4,4 @@
 | SolutionArchitect | ARCHITECT | Architect or PM | 2026-09-17 |
 | FunctionalSpec | ARCHITECT | Architect / PM | 2026-09-17 |
 | Code | TECHNICAL | Technical Consultant / Developer | 2026-10-01 |
+| Testing | TECHNICAL | Technical Consultant / Developer | 2026-11-13 |
