@@ -108,7 +108,7 @@ Total: 22 of 22 passed (header/item pool 18, rate pool 4). Approach: rule logic 
 ## 10. Transport Finalization
 | Transport Request | Type (Workbench/Customizing) | Contents | Released Date | Ready for QA? |
 |---|---|---|---|---|
-| PS4K902111 | Workbench | BSP app ZPS_RFPEFFORT (WAPA, 2 ICF nodes, MIME entry; task PS4K902181) plus 22 repository objects (package, message class, 3 tables, 7 CDS views, 3 behavior definitions, 3 classes, 2 service definitions, 2 service bindings) plus the generated gateway service-group entries (G4BA, SUSH) | Not released | ❌ Not yet: the BSP app is now on the request, but task PS4K902112 (owner ANKUR) still lists the removed `ZEFRTFUNC` / `ZPS_EFRT` entries (I-15) and awaits release approval |
+| PS4K902111 | Workbench | BSP app ZPS_RFPEFFORT (WAPA, 2 ICF nodes, MIME entry; task PS4K902181) plus 22 repository objects (package, message class, 3 tables, 7 CDS views, 3 behavior definitions, 3 classes, 2 service definitions, 2 service bindings) plus the generated gateway service-group entries (G4BA, SUSH) | Not released | ❌ Not yet: the BSP app is now on the request, but task PS4K902112 (owner ANKUR) still lists the removed `ZEFRTFUNC` / `ZPS_EFRT` entries (I-15) and release was attempted 2026-11-13 on the user's instruction and failed: task PS4K902181 (BSP app) released, but task PS4K902112 would not release (empty error text), so request PS4K902111 stays open (I-18) |
 
 ## 11. Assumptions & Dependencies
 - Single currency across the app; item currency is copied from the matched rate, and a manual cost with no rate keeps a blank currency.
@@ -140,6 +140,7 @@ Total: 22 of 22 passed (header/item pool 18, rate pool 4). Approach: rule logic 
 | I-15 | Transport PS4K902111 still lists AUTH ZEFRTFUNC and SUSO ZPS_EFRT from the removed authorization object; removal failed because task PS4K902112 can be changed only by its holder ANKUR and the connector now runs as a different SAP user | Not changed; no ownership change made without approval. Needs ANKUR (or Basis) to remove the two entries in SE09, or approval to reassign the task | None | None | Open |
 | I-16 | ATC re-run on the 11 CDS/service objects again returned no worklist (0 of 11 reported) | Not a pass; covered by activation and by running the views against the database | None | None | Open (tool limitation) |
 | I-17 | Fiori deploy connector (SAP-PS4-110-FIORI-DEPLOY) first failed to connect, then connected after authorization, but its allowlist only permits package `$TMP`; the deploy into `ZPS_EFFORT` / `PS4K902111` was refused and nothing was written. This sandbox cannot reach the SAP host for `npm run deploy` | User asked Basis to add `ZPS_EFFORT` to the connector allowlist; deploy will be retried once done (I-09) | Possible | None | Closed (Basis widened the allowlist; deploy succeeded) |
+| I-18 | `release_recursive` on PS4K902111 released task PS4K902181 but failed on task PS4K902112 (owner ANKUR; still holds stale ZEFRTFUNC / ZPS_EFRT entries); the request itself was not released | Not retried blindly. Needs ANKUR to open the task in SE09 (Problems view / remove the stale entries) and release it, then the request can be released | None | None | Open |
 | I-11 | Local abaplint cannot parse RAP behavior pools | Local lint skipped for those writes; SAP syntax check and activation used | None | None | Closed |
 
 ## 13. Sign-off
