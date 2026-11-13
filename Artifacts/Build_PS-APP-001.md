@@ -8,7 +8,7 @@
 | Linked Technical Spec Ref | TechnicalSpec_PS-APP-001.md (v1.2) |
 | Linked Functional Spec Ref | FunctionalSpec_PS-APP-001.md (v1.2) |
 | Developer | ankur.gupta04@nagarro.com (SAP user ANKUR) |
-| Version | 1.3 |
+| Version | 1.4 |
 
 ### Version History
 | Version | Date | Changed By | Change Summary | Status at time |
@@ -16,6 +16,7 @@
 | 1.0 | 2026-10-01 | ankur.gupta04@nagarro.com | Initial creation. Backend built and unit-tested in DEV; UI5 app built locally; deployment, service publishing and authorization setup still open (see Sections 10–12). | In Progress |
 | 1.1 | 2026-10-01 | ankur.gupta04@nagarro.com | Custom authorization object `ZPS_EFRT` and all code-level authorization checks removed at the user's instruction (not required); TS now v1.2, FS §9 now v1.1. "Mark as Won" is now tested end to end. | In Progress |
 | 1.3 | 2026-11-13 | ankur.gupta04@nagarro.com | Build resumed. Service binding ZPSEFFRTHDR_O4 re-verified as published. I-05 resolved: FS v1.2 aligns Rule 4 with the non-blocking warning. Attempted transport cleanup and ATC re-run; both blocked (see I-15, I-16). UI5 deployment still outstanding (Fiori deploy connector not connected). | In Progress |
+| 1.4 | 2026-11-13 | ankur.gupta04@nagarro.com | UI5 app `ZPS_RFPEFFORT` deployed through the Fiori deploy connector into package `ZPS_EFFORT` under `PS4K902111` (connector allowlist widened by Basis). Manifest serves HTTP 200; both OData services return `$metadata` and expose the entity sets the app binds to. Transport not yet released. | In Progress |
 | 1.2 | 2026-10-01 | ankur.gupta04@nagarro.com | User skipped PFCG roles and UI5 deployment and reports the service bindings as published. UI5 app previewed locally against a mock OData V4 backend (`npm run start:mock`); two UI defects found and fixed (Actuals tab shown on Estimate RFPs; failed create showed no error). | In Progress |
 
 ## 2. Development Environment & Transport
@@ -39,8 +40,8 @@
 | Behavior definition | Z_I_PSEFFRTHDR (header + item), Z_C_PSEFFRTHDR (projection), Z_I_PSEFFRTRATE | Active | Renamed/structured per RAP rules |
 | Class | ZBP_I_PSEFFRTHDR, ZBP_I_PSEFFRTRATE (behavior pools with unit tests), ZCX_PS_EFFORT | Active | Pool names follow the renamed behavior definitions |
 | Service definition | Z_UI_PSEFFRTHDR, Z_UI_PSEFFRTRATE | Active | No |
-| Service binding (OData V4) | ZPSEFFRTHDR_O4, ZPSEFFRTRATE_O4 | Active, **not published** | Publishing is not allowed in this customizing client |
-| SAPUI5 app | zps.rfpeffortmgmt | Built locally under `build/PS-APP-001/ui5app/`; **not deployed** | Deploy container `ZPS_RFPEFFORT` added |
+| Service binding (OData V4) | ZPSEFFRTHDR_O4, ZPSEFFRTRATE_O4 | Active, published (re-verified 2026-11-13 for `ZPSEFFRTHDR_O4`; `ZPSEFFRTRATE_O4` `$metadata` served) | No |
+| SAPUI5 app | zps.rfpeffortmgmt | Deployed as BSP app `ZPS_RFPEFFORT` (20 files, test and mock files excluded) into `ZPS_EFFORT` under `PS4K902111`; URL `https://sapdev.nagarro.com:44300/sap/bc/ui5_ui5/sap/zps_rfpeffort/index.html?sap-client=110` | Deploy container `ZPS_RFPEFFORT` added |
 | PFCG roles (service access only) | Z_PS_EFFORT_PRESALES / _DELIVERY / _PM / _TEAM | **Not created** | Manual (PFCG); the custom authorization object was removed from scope |
 | Launchpad tile | Z_PS_RFPEFFORT_TILE | **Not created** | Depends on the deployed app |
 
@@ -95,19 +96,19 @@ Total: 22 of 22 passed (header/item pool 18, rate pool 4). Approach: rule logic 
 ## 9. Component Test Plan (Finalized)
 | # | Acceptance Test Criteria | Test Data / Selection Parameters | Expected Result | Actual Result |
 |---|---|---|---|---|
-| 1 | Create an RFP and add estimate lines with a matching rate | Rate SD / Consultant = 100 USD; line SD, Prepare, 10 h | Cost 1,000 USD; status Estimate | ✅ BO-level test; UI step pending deployment |
+| 1 | Create an RFP and add estimate lines with a matching rate | Rate SD / Consultant = 100 USD; line SD, Prepare, 10 h | Cost 1,000 USD; status Estimate | ✅ BO-level test; UI step now needs a browser run against the deployed app |
 | 2 | Mark an RFP as Won | Estimate-status RFP | Status Won; Actuals tab available | ✅ BO-level test; UI step pending deployment |
 | 3 | Log actuals with an activity description on a Won RFP | Won RFP | Saved; dashboard shows estimate vs. actual | ✅ BO-level test (save); dashboard view pending deployment |
 | 4 | Negative effort | any RFP | Save blocked | ✅ BO-level test |
 | 5 | Actuals while status is Estimate | Estimate RFP | Save blocked | ✅ BO-level test |
 | 6 | No matching rate | role with no rate | Cost blank, manual entry accepted | ✅ BO-level test (blank + warning); manual entry covered by the cost-logic unit test |
 | 7 (new) | Manual cost override survives when a rate exists | line with a manual cost differing from hours × rate | Cost kept, override flag set | ✅ Unit test |
-| 8 (new) | Dashboard export | Dashboard with data | Spreadsheet downloads with the on-screen columns | ⏳ Needs deployed app |
+| 8 (new) | Dashboard export | Dashboard with data | Spreadsheet downloads with the on-screen columns | ⏳ Needs a browser run against the deployed app |
 
 ## 10. Transport Finalization
 | Transport Request | Type (Workbench/Customizing) | Contents | Released Date | Ready for QA? |
 |---|---|---|---|---|
-| PS4K902111 | Workbench | 22 repository objects (package, message class, 3 tables, 7 CDS views, 3 behavior definitions, 3 classes, 2 service definitions, 2 service bindings) plus the generated gateway service-group entries (G4BA, SUSH) | Not released | ❌ Not yet: the BSP application still has to be added to the same request, so releasing now would break the single-request rule |
+| PS4K902111 | Workbench | BSP app ZPS_RFPEFFORT (WAPA, 2 ICF nodes, MIME entry; task PS4K902181) plus 22 repository objects (package, message class, 3 tables, 7 CDS views, 3 behavior definitions, 3 classes, 2 service definitions, 2 service bindings) plus the generated gateway service-group entries (G4BA, SUSH) | Not released | ❌ Not yet: the BSP app is now on the request, but task PS4K902112 (owner ANKUR) still lists the removed `ZEFRTFUNC` / `ZPS_EFRT` entries (I-15) and awaits release approval |
 
 ## 11. Assumptions & Dependencies
 - Single currency across the app; item currency is copied from the matched rate, and a manual cost with no rate keeps a blank currency.
@@ -117,7 +118,7 @@ Total: 22 of 22 passed (header/item pool 18, rate pool 4). Approach: rule logic 
 - **Manual dependencies outstanding** (cannot be done through the connected tooling):
   - (Skipped by the user for now) Create the four `Z_PS_EFFORT_*` roles in PFCG and assign them the service start access: all four get `Z_UI_PSEFFRTHDR`; only the roles that maintain rates (by default `Z_PS_EFFORT_DELIVERY`) get `Z_UI_PSEFFRTRATE`. No custom authorization object is needed.
   - ~~Publish the service bindings~~ — done per the user.
-  - (Skipped by the user for now) Provide the SAP system URL and credentials (or deploy through ADT) so `npm run deploy` can create `ZPS_RFPEFFORT` under PS4K902111.
+  - ~~Deploy `ZPS_RFPEFFORT`~~ — done 2026-11-13 through the Fiori deploy connector.
   - Create the Launchpad catalog/tile and target mapping once the app is deployed.
 
 ## 12. Issues Log
@@ -131,14 +132,14 @@ Total: 22 of 22 passed (header/item pool 18, rate pool 4). Approach: rule logic 
 | I-06 | FS §5 makes Activity Description mandatory for actual lines but TS rule 6 does not list it | Implemented per FS §5 | None | None | Closed |
 | I-07 | Service bindings cannot be published in the customizing client | User reports publishing is now done (not re-verified from here) | None | None | Closed |
 | I-08 | Custom authorization object `ZPS_EFRT` could not be created through the tooling | Removed from scope at the user's instruction (not required); code, TS v1.2 and FS §9 v1.1 updated. Roles are created manually in PFCG | None | None | Closed |
-| I-09 | UI5 app built but not deployed or exercised against the live service | User skipped deployment. Previewed locally on a mock backend only; live-service behaviour is untested. Mock files (`webapp/test`, `webapp/localService`) are excluded from the deploy build | Possible | None | Open (deferred by user) |
+| I-09 | UI5 app built but not deployed or exercised against the live service | User skipped deployment. Previewed locally on a mock backend only; live-service behaviour is untested. Mock files (`webapp/test`, `webapp/localService`) are excluded from the deploy build | Possible | None | Partly closed: deployed and manifest/`$metadata` verified; the UI screens have not been exercised in a browser from here (no route and no login), so a final visual check is left to the user or to `/Testing` |
 | I-13 | Preview found: Actuals tab visible on Estimate RFPs (V4 string formatted to boolean before the formatter) | Formatter bindings use `targetType: 'any'` | None | None | Closed |
 | I-14 | Preview found: a failed create (negative effort) showed no message because V4 does not reject `created()` | `BaseController.createEntry` surfaces the server error in a dialog and removes the transient row | None | None | Closed |
 | I-10 | Message class was created without messages by the batch call | Messages written by update and re-activated; verified by read-back | None | None | Closed |
 | I-12 | `strict(2)` requires an authorization clause even without custom checks | Behavior definitions keep a bare `authorization master ( global )` / `dependent` declaration with empty handlers | None | None | Closed |
 | I-15 | Transport PS4K902111 still lists AUTH ZEFRTFUNC and SUSO ZPS_EFRT from the removed authorization object; removal failed because task PS4K902112 can be changed only by its holder ANKUR and the connector now runs as a different SAP user | Not changed; no ownership change made without approval. Needs ANKUR (or Basis) to remove the two entries in SE09, or approval to reassign the task | None | None | Open |
 | I-16 | ATC re-run on the 11 CDS/service objects again returned no worklist (0 of 11 reported) | Not a pass; covered by activation and by running the views against the database | None | None | Open (tool limitation) |
-| I-17 | Fiori deploy connector (SAP-PS4-110-FIORI-DEPLOY) first failed to connect, then connected after authorization, but its allowlist only permits package `$TMP`; the deploy into `ZPS_EFFORT` / `PS4K902111` was refused and nothing was written. This sandbox cannot reach the SAP host for `npm run deploy` | User asked Basis to add `ZPS_EFFORT` to the connector allowlist; deploy will be retried once done (I-09) | Possible | None | Open (manual dependency) |
+| I-17 | Fiori deploy connector (SAP-PS4-110-FIORI-DEPLOY) first failed to connect, then connected after authorization, but its allowlist only permits package `$TMP`; the deploy into `ZPS_EFFORT` / `PS4K902111` was refused and nothing was written. This sandbox cannot reach the SAP host for `npm run deploy` | User asked Basis to add `ZPS_EFFORT` to the connector allowlist; deploy will be retried once done (I-09) | Possible | None | Closed (Basis widened the allowlist; deploy succeeded) |
 | I-11 | Local abaplint cannot parse RAP behavior pools | Local lint skipped for those writes; SAP syntax check and activation used | None | None | Closed |
 
 ## 13. Sign-off
