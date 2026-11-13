@@ -8,7 +8,7 @@
 | Linked Technical Spec Ref | TechnicalSpec_PS-APP-001.md (v1.2) |
 | Linked Functional Spec Ref | FunctionalSpec_PS-APP-001.md (v1.2) |
 | Developer | ankur.gupta04@nagarro.com (SAP user ANKUR) |
-| Version | 1.4 |
+| Version | 1.5 |
 
 ### Version History
 | Version | Date | Changed By | Change Summary | Status at time |
@@ -17,6 +17,7 @@
 | 1.1 | 2026-10-01 | ankur.gupta04@nagarro.com | Custom authorization object `ZPS_EFRT` and all code-level authorization checks removed at the user's instruction (not required); TS now v1.2, FS §9 now v1.1. "Mark as Won" is now tested end to end. | In Progress |
 | 1.3 | 2026-11-13 | ankur.gupta04@nagarro.com | Build resumed. Service binding ZPSEFFRTHDR_O4 re-verified as published. I-05 resolved: FS v1.2 aligns Rule 4 with the non-blocking warning. Attempted transport cleanup and ATC re-run; both blocked (see I-15, I-16). UI5 deployment still outstanding (Fiori deploy connector not connected). | In Progress |
 | 1.4 | 2026-11-13 | ankur.gupta04@nagarro.com | UI5 app `ZPS_RFPEFFORT` deployed through the Fiori deploy connector into package `ZPS_EFFORT` under `PS4K902111` (connector allowlist widened by Basis). Manifest serves HTTP 200; both OData services return `$metadata` and expose the entity sets the app binds to. Transport not yet released. | In Progress |
+| 1.5 | 2026-11-13 | ankur.gupta04@nagarro.com | Transport PS4K902111 released (tasks PS4K902112 and PS4K902181). To release it, task PS4K902112 was reassigned from ANKUR to the connector user ASHUTOSH at the user's approval, and the stale `ZEFRTFUNC` / `ZPS_EFRT` entries were removed. Build record frozen for `/Testing` with the open items listed in Sections 7, 9 and 11. | Frozen |
 | 1.2 | 2026-10-01 | ankur.gupta04@nagarro.com | User skipped PFCG roles and UI5 deployment and reports the service bindings as published. UI5 app previewed locally against a mock OData V4 backend (`npm run start:mock`); two UI defects found and fixed (Actuals tab shown on Estimate RFPs; failed create showed no error). | In Progress |
 
 ## 2. Development Environment & Transport
@@ -108,7 +109,7 @@ Total: 22 of 22 passed (header/item pool 18, rate pool 4). Approach: rule logic 
 ## 10. Transport Finalization
 | Transport Request | Type (Workbench/Customizing) | Contents | Released Date | Ready for QA? |
 |---|---|---|---|---|
-| PS4K902111 | Workbench | BSP app ZPS_RFPEFFORT (WAPA, 2 ICF nodes, MIME entry; task PS4K902181) plus 22 repository objects (package, message class, 3 tables, 7 CDS views, 3 behavior definitions, 3 classes, 2 service definitions, 2 service bindings) plus the generated gateway service-group entries (G4BA, SUSH) | Not released | ❌ Not yet: the BSP app is now on the request, but task PS4K902112 (owner ANKUR) still lists the removed `ZEFRTFUNC` / `ZPS_EFRT` entries (I-15) and release was attempted 2026-11-13 on the user's instruction and failed: task PS4K902181 (BSP app) released, but task PS4K902112 would not release (empty error text), so request PS4K902111 stays open (I-18) |
+| PS4K902111 | Workbench | BSP app ZPS_RFPEFFORT (WAPA, 2 ICF nodes, MIME entry; task PS4K902181) plus 22 repository objects (package, message class, 3 tables, 7 CDS views, 3 behavior definitions, 3 classes, 2 service definitions, 2 service bindings) plus the generated gateway service-group entries (G4BA, SUSH) | 2026-11-13 | ✅ Released (request PS4K902111, tasks PS4K902112 and PS4K902181 all status R); ready for QA import |
 
 ## 11. Assumptions & Dependencies
 - Single currency across the app; item currency is copied from the matched rate, and a manual cost with no rate keeps a blank currency.
@@ -137,18 +138,18 @@ Total: 22 of 22 passed (header/item pool 18, rate pool 4). Approach: rule logic 
 | I-14 | Preview found: a failed create (negative effort) showed no message because V4 does not reject `created()` | `BaseController.createEntry` surfaces the server error in a dialog and removes the transient row | None | None | Closed |
 | I-10 | Message class was created without messages by the batch call | Messages written by update and re-activated; verified by read-back | None | None | Closed |
 | I-12 | `strict(2)` requires an authorization clause even without custom checks | Behavior definitions keep a bare `authorization master ( global )` / `dependent` declaration with empty handlers | None | None | Closed |
-| I-15 | Transport PS4K902111 still lists AUTH ZEFRTFUNC and SUSO ZPS_EFRT from the removed authorization object; removal failed because task PS4K902112 can be changed only by its holder ANKUR and the connector now runs as a different SAP user | Not changed; no ownership change made without approval. Needs ANKUR (or Basis) to remove the two entries in SE09, or approval to reassign the task | None | None | Open |
+| I-15 | Transport PS4K902111 still lists AUTH ZEFRTFUNC and SUSO ZPS_EFRT from the removed authorization object; removal failed because task PS4K902112 can be changed only by its holder ANKUR and the connector now runs as a different SAP user | Not changed; no ownership change made without approval. Needs ANKUR (or Basis) to remove the two entries in SE09, or approval to reassign the task | None | None | Closed (2026-11-13: task reassigned to ASHUTOSH at user approval, entries removed) |
 | I-16 | ATC re-run on the 11 CDS/service objects again returned no worklist (0 of 11 reported) | Not a pass; covered by activation and by running the views against the database | None | None | Open (tool limitation) |
 | I-17 | Fiori deploy connector (SAP-PS4-110-FIORI-DEPLOY) first failed to connect, then connected after authorization, but its allowlist only permits package `$TMP`; the deploy into `ZPS_EFFORT` / `PS4K902111` was refused and nothing was written. This sandbox cannot reach the SAP host for `npm run deploy` | User asked Basis to add `ZPS_EFFORT` to the connector allowlist; deploy will be retried once done (I-09) | Possible | None | Closed (Basis widened the allowlist; deploy succeeded) |
-| I-18 | `release_recursive` on PS4K902111 released task PS4K902181 but failed on task PS4K902112 (owner ANKUR; still holds stale ZEFRTFUNC / ZPS_EFRT entries); the request itself was not released | Not retried blindly. Needs ANKUR to open the task in SE09 (Problems view / remove the stale entries) and release it, then the request can be released | None | None | Open |
+| I-18 | `release_recursive` on PS4K902111 released task PS4K902181 but failed on task PS4K902112 (owner ANKUR; still holds stale ZEFRTFUNC / ZPS_EFRT entries); the request itself was not released | Not retried blindly. Needs ANKUR to open the task in SE09 (Problems view / remove the stale entries) and release it, then the request can be released | None | None | Closed (2026-11-13: released after I-15 cleanup) |
 | I-11 | Local abaplint cannot parse RAP behavior pools | Local lint skipped for those writes; SAP syntax check and activation used | None | None | Closed |
 
 ## 13. Sign-off
 | Role | Name | Status |
 |---|---|---|
 | Developer | ankur.gupta04@nagarro.com | ✅ Approved |
-| Peer Reviewer | | ⬜ Pending |
+| Peer Reviewer | Not yet assigned | ⬜ Pending |
 | Technical Lead | | ⬜ Pending |
 
 ---
-**Next step:** `/Testing` for Object ID: PS-APP-001, once the manual dependencies in Section 11 are cleared and PS4K902111 is ready for QA import.
+**Next step:** `/Testing` for Object ID: PS-APP-001. Carried into `/Testing` as open items: peer review sign-off, PFCG roles (skipped by the user), Launchpad tile, browser check of the deployed UI against live services, ATC gap on CDS/service objects (I-16).
