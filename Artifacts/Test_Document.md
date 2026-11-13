@@ -1,6 +1,6 @@
 # Test Document
 
-> **Status: In Progress (Draft).** Not frozen. UI-level cycles (SIT, UAT) have not been executed yet; see Sections 3 and 5.
+> **Status: In Progress.** Not frozen. SIT and UAT were executed on 2026-11-13 through the deployed app; 6 defects are open (1 High), see Section 9.
 
 ## PS-APP-001 — Project & RFP Effort Management
 
@@ -12,15 +12,16 @@
 | Linked Build & Unit Test Record Ref | [Build_PS-APP-001.md](Build_PS-APP-001.md) (v1.5) |
 | Linked Technical Spec Ref | [TechnicalSpec_PS-APP-001.md](TechnicalSpec_PS-APP-001.md) (v1.2) |
 | Linked Functional Spec Ref | [FunctionalSpec_PS-APP-001.md](FunctionalSpec_PS-APP-001.md) (v1.2) |
-| Tester(s) | ankur.gupta04@nagarro.com (Technical Consultant / Developer; also acting as Business Owner for UAT) |
+| Tester(s) | ankur.gupta04@nagarro.com (Technical Consultant / Developer; also acting as Business Owner for UAT). Execution: AI session through the Fiori deploy connector (headless Chromium on the connector host, SAP user ASHUTOSH) |
 | Test system | PS4, client 110 (DEV). No separate QA/UAT client was used, by the user's decision. Transport PS4K902111 is released; its import into QA has not been confirmed. |
 | App URL | https://sapdev.nagarro.com:44300/sap/bc/ui5_ui5/sap/zps_rfpeffort/index.html?sap-client=110 |
-| Version | 0.1 |
+| Version | 0.2 |
 
 #### Version History
 | Version | Date | Changed By | Change Summary | Status at time |
 |---|---|---|---|---|
 | 0.1 | 2026-11-13 | ankur.gupta04@nagarro.com | Initial creation. Component tests re-run in DEV; SIT and UAT scripts prepared but not executed (the browser UI cannot be driven from the AI session). | In Progress |
+| 0.2 | 2026-11-13 | ankur.gupta04@nagarro.com | SIT flows F1–F4 and UAT scenarios 1–6 executed against the deployed app in PS4 / 110, using the Fiori deploy connector's headless browser (`browser_run`) and OData client (`odata_request`), signed in as SAP user ASHUTOSH. 6 defects logged. | In Progress |
 
 ### 2. Component Test
 
@@ -37,8 +38,8 @@
 | Assignment statements | Header defaults (status Estimate, owner) and item currency copied from the rate | ✅ `test_bo_header_defaults`, `test_rate_without_currency` passed |
 | Table loops (endless loops/efficiency) | Dashboard aggregation is pushed down in CDS (`SUM`/`GROUP BY`) | ✅ By design review (Build record section 4); dashboard view reads the database without error and returns no rows (tables empty) |
 | PERFORMs/function modules | None used; logic sits in local helper classes | N/A; helper classes covered by the 22 unit tests |
-| User interfaces (push buttons, line selection) | List, create, add line, Mark as Won, delete, dashboard, rate master | ⬜ Not executed on the deployed app; previewed against a mock backend only (Build record section 12, I-09, I-13, I-14). See SIT script in Section 3. |
-| Output layouts (incl. paper printouts) | No printing in scope; dashboard spreadsheet export | ⬜ Export not executed on the deployed app (Build record section 9, row 8) |
+| User interfaces (push buttons, line selection) | List, create, add line, Mark as Won, dashboard, rate master | ✅ Executed on the deployed app (Section 3); defects D-01, D-02, D-06 |
+| Output layouts (incl. paper printouts) | No printing in scope; dashboard spreadsheet export | ⚠️ Export dialog ran to completion; the downloaded file's content was not inspected (the tool cannot open downloads) |
 | Online documentation | None specified in the FS or TS | N/A |
 
 **Unit-test re-run (2026-11-13, SAPDiagnose, PS4 / 110):** `ZBP_I_PSEFFRTHDR` 18 of 18 passed; `ZBP_I_PSEFFRTRATE` 4 of 4 passed; 0 failures, 0 errors, 0 skipped. Total 22 of 22.
@@ -60,25 +61,25 @@ The app is standalone: it reads and writes only its own three tables through its
 |---|---|---|
 | Deployment check: manifest serves, app ID `zps.rfpeffortmgmt` (HTTP 200, 2026-11-13) | ✅ Passed | — |
 | Service check: both OData V4 `$metadata` documents return; entity sets `RfpEffort`, `RfpEffortItem`, `EffortDashboard`, `RoleValueHelp`, `CostRate` are exposed (2026-11-13) | ✅ Passed | — |
-| App flow F1: List → Create RFP → Detail → add estimate line (cost auto-calculated) | ⬜ Not executed | — |
-| App flow F2: Detail → Mark as Won → Actuals tab appears → add actual line | ⬜ Not executed | — |
-| App flow F3: Dashboard matrix and RFP summary, export to spreadsheet | ⬜ Not executed | — |
-| App flow F4: Rate Master → add, change, delete a rate; value help in the line dialog shows the role | ⬜ Not executed | — |
+| App flow F1: List → Create RFP → Detail → add estimate line (cost auto-calculated) | ✅ Passed: RFP "UAT Test RFP Alpha" created, owner defaulted, status Estimate; line SD / Prepare / Consultant / 10 h → 1,000 USD | D-05, D-06 (cosmetic/performance) |
+| App flow F2: Detail → Mark as Won → Actuals tab appears → add actual line | ✅ Passed: confirmation dialog, status Won, button hidden, Actuals tab shown; actual line 12 h → 1,200 USD saved | D-02 |
+| App flow F3: Dashboard matrix and RFP summary, export to spreadsheet | ✅ Matrix and summary show correct totals and variance; ⚠️ export file content not verified | — |
+| App flow F4: Rate Master → add, change, delete a rate; value help in the line dialog shows the role | ✅ Add and inline change passed (SD / Consultant / 100 USD); role value help used in the line dialog. Delete not executed (rate kept as test data) | D-03 |
 
 ### 4. String/Cycle Testing
 N/A. The object is not part of a multi-module business process cycle; the app flows F1–F4 in Section 3 cover its own end-to-end path.
 
 ### 5. User Acceptance Testing (UAT)
-Business Owner for UAT: ankur.gupta04@nagarro.com (by the user's decision). Test data must be sample/masked; no production data.
+Business Owner for UAT: ankur.gupta04@nagarro.com (by the user's decision). Test data: invented sample data only ("UAT Test RFP Alpha", "Test Customer A", rate SD / Consultant 100 USD); no production data. Executed by the AI session on the user's instruction; the Business Owner still has to accept the results.
 
 | FS Scenario Ref (Section 11) | Executed By | Result |
 |---|---|---|
-| 1. Create an RFP and add estimate lines with a matching rate (e.g. rate SD / Consultant = 100 USD, line SD / Prepare / 10 h) → expect cost 1,000 USD, status Estimate | — | ⬜ Not executed |
-| 2. Mark an RFP as Won → expect status Won, Actuals tab available | — | ⬜ Not executed |
-| 3. Log actuals with an activity description on a Won RFP → expect save, and the dashboard shows estimate vs. actual | — | ⬜ Not executed |
-| 4. Enter negative effort → expect save blocked with an on-screen error | — | ⬜ Not executed |
-| 5. Log actuals on an RFP still in Estimate → expect save blocked, message says it must be marked Won first | — | ⬜ Not executed |
-| 6. Line with no matching rate → expect cost blank, non-blocking note, manual cost accepted | — | ⬜ Not executed |
+| 1. Create an RFP and add estimate lines with a matching rate (e.g. rate SD / Consultant = 100 USD, line SD / Prepare / 10 h) → expect cost 1,000 USD, status Estimate | AI session (UI) | ✅ Passed: cost 1,000 USD, status Estimate |
+| 2. Mark an RFP as Won → expect status Won, Actuals tab available | AI session (UI) | ✅ Passed; ❌ estimate lines stay editable after Won (D-02) |
+| 3. Log actuals with an activity description on a Won RFP → expect save, and the dashboard shows estimate vs. actual | AI session (UI) | ✅ Passed: saved 12 h / 1,200 USD; dashboard shows estimate vs. actual and variance |
+| 4. Enter negative effort → expect save blocked with an on-screen error | AI session (UI) | ✅ Passed: "Effort must be zero or positive" shown, nothing saved |
+| 5. Log actuals on an RFP still in Estimate → expect save blocked, message says it must be marked Won first | AI session (UI + OData) | ✅ Passed: Actuals tab hidden in the UI; direct POST rejected with ZPS_EFFORT/005 "Project must be marked \"Won\" before logging actuals" |
+| 6. Line with no matching rate → expect cost blank, non-blocking note, manual cost accepted | AI session (UI + OData) | ⚠️ Partial: save not blocked and manual cost 800 USD accepted (override flag set); ❌ note not shown in UI (D-01); cost shows 0 instead of blank (D-04) |
 
 Backend equivalents of scenarios 1–6 already pass as BO-level unit tests (Section 2a); UAT repeats them through the deployed UI.
 
@@ -104,12 +105,18 @@ Backend equivalents of scenarios 1–6 already pass as BO-level unit tests (Sect
 ### 9. Defect Log
 | Defect ID | Description | Severity | Status | Resolution |
 |---|---|---|---|---|
-| — | No defects raised in this phase so far (UI cycles not executed) | — | — | — |
+| D-01 | The no-rate warning ZPS_EFFORT/004 is returned by the backend (`sap-messages` header) but the UI shows only "Saved"; FS §8 error 4 requires an on-screen note | Medium | Open | UI must surface warning messages after create (e.g. message toast or popover) |
+| D-02 | Estimate lines stay editable and deletable after the RFP is Won, both in the UI and through the API (PATCH accepted, cost recalculated); FS §6 Rule 7 says estimate lines remain visible as read-only reference | High | Open | Needs feature control on estimate items when header status is WON (backend) and read-only estimate table in the UI. Test data was restored to 10 h after the check |
+| D-03 | Add-rate dialog saves a blank Rate as 0 although the field is marked required | Low | Open | Validate in the dialog or reject 0/blank in the rate validation, subject to FS confirmation that a 0 rate is invalid |
+| D-04 | With no matching rate the cost shows 0 instead of blank (FS §6 Rule 4) | Low | Open | Known build assumption (Build record §11: blank cannot be told apart from 0 in a decimal field); needs FS decision or a nullable/empty display in the UI |
+| D-05 | App deployed without `Component-preload.js` (404, modules load one by one) | Low | Open | Run `ui5 build` before deployment and redeploy |
+| D-06 | UI5 "templateShareable" FUTURE FATAL warnings for the Select controls in the estimate/actual tables | Low | Open | Set `templateShareable: true` on the inner item bindings |
 
 ### 10. Assumptions & Dependencies
 - Assumed (user decision): DEV client 110 serves as the test client; no separate QA/UAT client.
 - Assumed (user decision): the developer also acts as Business Owner for UAT sign-off.
-- Dependency: UI-level SIT (F1–F4) and UAT scenarios 1–6 must be executed by a person in the browser against the app URL in Section 1. The AI session has no route or login to the SAP host.
+- SIT and UAT were executed through the Fiori deploy connector's browser and OData tools (headless Chromium on the connector host, SAP user ASHUTOSH), not on a person's device.
+- Test data left in DEV: RFP "UAT Test RFP Alpha" (Won, 2 estimate lines, 1 actual line) and rate SD / Consultant 100 USD.
 - Dependency: PFCG roles `Z_PS_EFFORT_*` must exist before security testing can be done with restricted users.
 - Dependency: peer reviewer for the Code Review and Component Test Plan Review sign-offs.
 - Known gap: ATC did not report the 7 CDS views, 2 service definitions and 2 service bindings (Build record I-16); they are covered by activation and by running the views against the database.
@@ -123,10 +130,10 @@ Backend equivalents of scenarios 1–6 already pass as BO-level unit tests (Sect
 ### 12. Sign-off
 | Role | Name | Status |
 |---|---|---|
-| Tester/Programmer | ankur.gupta04@nagarro.com | ⬜ Pending (UI cycles not executed) |
+| Tester/Programmer | ankur.gupta04@nagarro.com | ⬜ Pending (open defects) |
 | Peer Reviewer / Technical Designer | Not yet assigned | ⬜ Pending |
 | Development Lead | Not yet assigned | ⬜ Pending |
 | Business Owner (UAT) | ankur.gupta04@nagarro.com | ⬜ Pending |
 
 ---
-**Next step:** execute SIT flows F1–F4 and UAT scenarios 1–6 in the app, record results here, then finalize. Deployment/Go-Live stays blocked until UAT sign-off is obtained and there are no open Critical/High defects.
+**Next step:** fix D-01 and D-02 (and the Low items as agreed), retest, obtain UAT sign-off, then finalize. Deployment/Go-Live stays blocked while D-02 (High) is open and UAT sign-off is pending.
